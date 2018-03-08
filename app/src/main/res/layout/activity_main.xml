@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.usharik.seznamslovnik.MainViewModel" />
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.usharik.seznamslovnik.MainActivity">
+
+        <ImageButton
+            android:id="@+id/btFrom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:onClick="onFromClick"
+            app:layout_constraintEnd_toStartOf="@+id/input"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/cz" />
+
+        <ImageButton
+            android:id="@+id/btTo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:onClick="onToClick"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/input"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ru" />
+
+        <EditText
+            android:id="@+id/input"
+            android:layout_width="215dp"
+            android:layout_height="57dp"
+            android:hint="@string/word_to_translate"
+            android:inputType="text"
+            android:onTextChanged="@{(s, start, before, count) -> viewModel.onTextChanged(s, start, before, count)}"
+            android:text="@={viewModel.word}"
+            app:layout_constraintEnd_toStartOf="@+id/btTo"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/btFrom"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="word" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/my_recycler_view"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="16dp"
+            android:focusable="true"
+            android:padding="8dp"
+            android:scrollbars="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/input"
+            app:layout_constraintVertical_bias="0.51" />
+
+
+    </android.support.constraint.ConstraintLayout>
+
+</layout>
