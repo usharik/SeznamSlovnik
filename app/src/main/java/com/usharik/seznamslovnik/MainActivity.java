@@ -1,8 +1,13 @@
 package com.usharik.seznamslovnik;
 
+import android.app.Activity;
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.LinearLayoutManager;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.usharik.seznamslovnik.databinding.ActivityMainBinding;
@@ -30,12 +35,41 @@ public class MainActivity extends ViewActivity<MainViewModel> {
         toLanguageIx = getViewModel().getToLanguageIx();
         binding.btFrom.setImageDrawable(getResources().getDrawable(LANG_ORDER[fromLanguageIx], null));
         binding.btTo.setImageDrawable(getResources().getDrawable(LANG_ORDER[toLanguageIx], null));
+        binding.myRecyclerView.setOnTouchListener((view, event) -> {
+            hideSoftKeyboard(this);
+            return view.performClick();
+        });
+        updateTitle();
 
         getViewModel().getAnswerPublishSubject().subscribe((adapter) -> {
             binding.myRecyclerView.setAdapter(adapter);
         });
 
         getViewModel().getToastShowSubject().subscribe((msg) -> Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.options, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch(item.getItemId()) {
+            case R.id.offlineMode:
+                item.setChecked(!item.isChecked());
+                getViewModel().setOfflineMode(item.isChecked());
+                updateTitle();
+                return true;
+            default:
+                return true;
+        }
+    }
+
+    private void updateTitle() {
+        setTitle(getViewModel().getActivityTitleResId());
     }
 
     public void onFromClick(View v) {
@@ -74,6 +108,20 @@ public class MainActivity extends ViewActivity<MainViewModel> {
             getViewModel().setFromLanguageIx(fromLanguageIx);
         }
         getViewModel().refreshSuggestion();
+    }
+
+    public static void hideSoftKeyboard(Activity activity) {
+        if (activity.getCurrentFocus() == null) {
+            return;
+        }
+        InputMethodManager inputMethodManager =
+                (InputMethodManager) activity.getSystemService(
+                        Activity.INPUT_METHOD_SERVICE);
+        if (inputMethodManager == null) {
+            return;
+        }
+        inputMethodManager.hideSoftInputFromWindow(
+                activity.getCurrentFocus().getWindowToken(), 0);
     }
 
     @Override

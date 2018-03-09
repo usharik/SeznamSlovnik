@@ -1,11 +1,17 @@
 package com.usharik.seznamslovnik.di;
 
+import android.app.Application;
+
 import com.usharik.seznamslovnik.AppState;
+import com.usharik.seznamslovnik.dao.AppDatabase;
+import com.usharik.seznamslovnik.service.TranslationService;
+import com.usharik.seznamslovnik.service.NetworkService;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import io.reactivex.subjects.PublishSubject;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -26,8 +32,35 @@ class ServiceModule {
     @Singleton
     Retrofit provideRetrofit() {
         return new Retrofit.Builder()
-                .baseUrl("https://slovnik.seznam.cz/suggest/")
+                .baseUrl("https://slovnik.seznam.cz/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
+    }
+
+    @Provides
+    @Singleton
+    AppDatabase provideAppDatabase(Application application) {
+        return AppDatabase.getAppDatabase(application);
+    }
+
+    @Provides
+    @Singleton
+    TranslationService provideTranslationService(AppDatabase appDatabase,
+                                             AppState appState,
+                                             Retrofit retrofit,
+                                             PublishSubject<String> toastShowSubject) {
+        return new TranslationService(appDatabase, appState, retrofit, toastShowSubject);
+    }
+
+    @Provides
+    @Singleton
+    NetworkService provideNetworkService(Application application) {
+        return new NetworkService(application);
+    }
+
+    @Provides
+    @Singleton
+    PublishSubject<String> provideToastShowSubject() {
+        return PublishSubject.create();
     }
 }

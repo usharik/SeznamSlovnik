@@ -4,15 +4,21 @@ import android.databinding.Bindable;
 import android.util.Log;
 
 import com.usharik.seznamslovnik.adapter.MyAdapter;
+import com.usharik.seznamslovnik.service.TranslationService;
 import com.usharik.seznamslovnik.framework.ViewModelObservable;
 import com.usharik.seznamslovnik.model.Answer;
+import com.usharik.seznamslovnik.model.Suggest;
 import com.usharik.seznamslovnik.service.APIInterface;
+import com.usharik.seznamslovnik.service.NetworkService;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -30,6 +36,9 @@ public class MainViewModel extends ViewModelObservable {
 
     private final AppState appState;
     private final Retrofit retrofit;
+    private final TranslationService translationService;
+    private final NetworkService networkService;
+    private PublishSubject<String> toastShowSubject;
 
     private String text;
     private String word;
@@ -38,13 +47,18 @@ public class MainViewModel extends ViewModelObservable {
     private int toLanguageIx = 1;
 
     private PublishSubject<MyAdapter> answerPublishSubject = PublishSubject.create();
-    private PublishSubject<String> toastShowSubject = PublishSubject.create();
 
     @Inject
     public MainViewModel(final AppState appState,
-                         final Retrofit retrofit) {
+                         final Retrofit retrofit,
+                         final TranslationService translationService,
+                         final NetworkService networkService,
+                         final PublishSubject<String> toastShowSubject) {
         this.appState = appState;
         this.retrofit = retrofit;
+        this.translationService = translationService;
+        this.networkService = networkService;
+        this.toastShowSubject = toastShowSubject;
         this.adapter = getEmptyAdapter();
     }
 
@@ -99,11 +113,39 @@ public class MainViewModel extends ViewModelObservable {
         return toastShowSubject;
     }
 
+    public boolean isOfflineMode() {
+        return appState.isOfflineMode;
+    }
+
+    public void setOfflineMode(boolean offlineMode) {
+        appState.isOfflineMode = offlineMode;
+    }
+
+    public int getActivityTitleResId() {
+        return !networkService.isNetworkConnected() || isOfflineMode() ? R.string.app_name_offline : R.string.app_name;
+    }
+
     public void onTextChanged(CharSequence s, int start, int before, int count) {
+        if (s == null || s.length() == 0) {
+            return;
+        }
+        String langFrom = LANG_ORDER_STR[fromLanguageIx];
+        String langTo = LANG_ORDER_STR[toLanguageIx];
+        if (!networkService.isNetworkConnected() || isOfflineMode()) {
+            List<String> strings = translationService.getSuggestions(s.toString(), langFrom, appState.suggestionCount)
+                    .subscribeOn(Schedulers.io())
+                    .firstElement()
+                    .blockingGet();
+
+            adapter = new MyAdapter(strings, translationService, langFrom, langTo);
+            answerPublishSubject.onNext(adapter);
+            return;
+        }
+
         APIInterface apiInterface = retrofit.create(APIInterface.class);
         Call<Answer> call = apiInterface.doGetSuggestions(
-                LANG_ORDER_STR[fromLanguageIx],
-                LANG_ORDER_STR[toLanguageIx],
+                langFrom,
+                langTo,
                 s.toString(),
                 "json",
                 1,
@@ -123,7 +165,13 @@ public class MainViewModel extends ViewModelObservable {
                     toastShowSubject.onNext("Null answer");
                     return;
                 }
-                adapter = new MyAdapter(response.body().result.get(0).suggest, retrofit, appState, toastShowSubject);
+                List<Suggest> suggest = response.body().result.get(0).suggest;
+                List<String> sgList = new ArrayList<>();
+                sgList.add(s.toString());
+                for (Suggest sg : suggest) {
+                    sgList.add(sg.value);
+                }
+                adapter = new MyAdapter(sgList, translationService, langFrom, langTo);
                 answerPublishSubject.onNext(adapter);
             }
 
@@ -139,7 +187,9 @@ public class MainViewModel extends ViewModelObservable {
         return adapter;
     }
 
-    public MyAdapter getEmptyAdapter() {
-        return new MyAdapter(Collections.EMPTY_LIST, retrofit, appState, toastShowSubject);
+    private MyAdapter getEmptyAdapter() {
+        String langFrom = LANG_ORDER_STR[fromLanguageIx];
+        String langTo = LANG_ORDER_STR[toLanguageIx];
+        return new MyAdapter(Collections.EMPTY_LIST, translationService, langFrom, langTo);
     }
 }
