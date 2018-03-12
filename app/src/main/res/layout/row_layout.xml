@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Word" />
 
-    <TextView
+    <com.usharik.seznamslovnik.widget.TranslationTextView
         android:id="@+id/translations"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

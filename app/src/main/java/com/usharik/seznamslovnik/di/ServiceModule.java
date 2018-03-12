@@ -1,6 +1,10 @@
 package com.usharik.seznamslovnik.di;
 
 import android.app.Application;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.res.Resources;
+import android.os.Vibrator;
 
 import com.usharik.seznamslovnik.AppState;
 import com.usharik.seznamslovnik.dao.AppDatabase;
@@ -62,5 +66,23 @@ class ServiceModule {
     @Singleton
     PublishSubject<String> provideToastShowSubject() {
         return PublishSubject.create();
+    }
+
+    @Provides
+    @Singleton
+    ClipboardManager provideClipboardManager(Application application) {
+        return (ClipboardManager) application.getSystemService(Context.CLIPBOARD_SERVICE);
+    }
+
+    @Provides
+    @Singleton
+    Vibrator provideVibrator(Application application) {
+        return (Vibrator) application.getSystemService(Context.VIBRATOR_SERVICE);
+    }
+
+    @Provides
+    @Singleton
+    Resources provideResources(Application application) {
+        return application.getResources();
     }
 }

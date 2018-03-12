@@ -39,6 +39,8 @@ import static java.net.HttpURLConnection.HTTP_OK;
 
 public class TranslationService {
 
+    private static final List<String> EMPTY_STR_LIST = Collections.unmodifiableList(new ArrayList<>());
+
     private final PublishSubject<Wrapper> storeSubject = PublishSubject.create();
     private final TranslationStorageDao dao;
     private final AppState appState;
@@ -71,14 +73,14 @@ public class TranslationService {
         });
     }
 
-    public Single<Pair<String, String>> translate(String question, String langFrom, String langTo) {
+    public Single<Pair<String, List<String>>> translate(String question, String langFrom, String langTo) {
         if (question == null || question.length() == 0) {
-            return Single.just(Pair.create("", ""));
+            return Single.just(Pair.create("", EMPTY_STR_LIST));
         }
 
         return existsActualTranslation(question, langFrom, langTo)
                 .subscribeOn(Schedulers.io())
-                .<Pair<String, List<String>>>flatMap((exists) -> {
+                .flatMap((exists) -> {
                     if (exists) {
                         return dao.getTranslations(question, langFrom, langTo, 1000)
                                 .flatMap((list) -> Maybe.just(Pair.create(question, list)))
@@ -86,10 +88,9 @@ public class TranslationService {
                     } else if (!appState.isOfflineMode) {
                         return runOnlineTranslation(question, langFrom, langTo);
                     } else {
-                        return Single.just(Pair.create(question, new ArrayList<>()));
+                        return Single.just(Pair.create(question, EMPTY_STR_LIST));
                     }
-                })
-                .flatMap((pair) -> Single.just(Pair.create(pair.first, concatList(pair.second))));
+                });
     }
 
     private Single<Boolean> existsActualTranslation(String question, String langFrom, String langTo) {
@@ -97,10 +98,10 @@ public class TranslationService {
                 .switchIfEmpty(Single.just(Word.NULL_WORD))
                 .flatMap((word) -> {
                     if (word == Word.NULL_WORD || !checkTranslationAge(word)) {
-                        return Single.just(new ArrayList<>());
+                        return Single.just(EMPTY_STR_LIST);
                     } else {
                         return dao.getTranslations(question, langFrom, langTo, 1)
-                                .switchIfEmpty(Single.just(new ArrayList<>()));
+                                .switchIfEmpty(Single.just(EMPTY_STR_LIST));
                     }
                 })
                 .flatMap((list) -> Single.just(!list.isEmpty()));
@@ -186,18 +187,6 @@ public class TranslationService {
             word.append(" ");
         }
         return result;
-    }
-
-    private static String concatList(List<String> list) {
-        StringBuilder sb = new StringBuilder();
-        for (String str : list) {
-            sb.append(str);
-            sb.append(", ");
-        }
-        if (sb.length() > 0) {
-            sb.delete(sb.length() - 2, sb.length());
-        }
-        return sb.toString();
     }
 
     private static class Wrapper {

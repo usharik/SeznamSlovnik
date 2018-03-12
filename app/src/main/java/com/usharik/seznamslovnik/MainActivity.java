@@ -13,9 +13,17 @@ import android.widget.Toast;
 import com.usharik.seznamslovnik.databinding.ActivityMainBinding;
 import com.usharik.seznamslovnik.framework.ViewActivity;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+
 public class MainActivity extends ViewActivity<MainViewModel> {
 
     private ActivityMainBinding binding;
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private int fromLanguageIx = 0;
     private int toLanguageIx = 1;
@@ -41,11 +49,33 @@ public class MainActivity extends ViewActivity<MainViewModel> {
         });
         updateTitle();
 
-        getViewModel().getAnswerPublishSubject().subscribe((adapter) -> {
-            binding.myRecyclerView.setAdapter(adapter);
-        });
+        compositeDisposable.add(getViewModel().getAnswerPublishSubject().subscribe((adapter) -> binding.myRecyclerView.setAdapter(adapter)));
+        compositeDisposable.add(getViewModel().getToastShowSubject()
+                .window(1500, TimeUnit.MILLISECONDS)
+                .subscribe((messages) -> {
+                    messages
+                            .toList()
+                            .map(HashSet::new)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe((set) -> {
+                                if (set.isEmpty()) {
+                                    return;
+                                }
+                                Iterator<String> iterator = set.iterator();
+                                StringBuilder sb = new StringBuilder();
+                                for (int i=0; i<set.size(); i++) {
+                                    String template = i < set.size()-1 ? "%s%n" : "%s";
+                                    sb.append(String.format(template, iterator.next()));
+                                }
+                                Toast.makeText(getApplicationContext(), sb, Toast.LENGTH_SHORT).show();
+                            });
+                }));
+    }
 
-        getViewModel().getToastShowSubject().subscribe((msg) -> Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show());
+    @Override
+    protected void onPause() {
+        compositeDisposable.clear();
+        super.onPause();
     }
 
     @Override

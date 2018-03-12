@@ -6,4 +6,5 @@
     <string name="title_notifications">Notifications</string>
     <string name="word_to_translate">Enter word to translate</string>
     <string name="offline_mode">Offline mode</string>
+    <string name="translation_is_copied">"%s" is copied to clipboard</string>
 </resources>

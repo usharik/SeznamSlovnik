@@ -1,6 +1,9 @@
 package com.usharik.seznamslovnik;
 
+import android.content.ClipboardManager;
+import android.content.res.Resources;
 import android.databinding.Bindable;
+import android.os.Vibrator;
 import android.util.Log;
 
 import com.usharik.seznamslovnik.adapter.MyAdapter;
@@ -38,7 +41,10 @@ public class MainViewModel extends ViewModelObservable {
     private final Retrofit retrofit;
     private final TranslationService translationService;
     private final NetworkService networkService;
-    private PublishSubject<String> toastShowSubject;
+    private final PublishSubject<String> toastShowSubject;
+    private final Resources resources;
+    private final ClipboardManager clipboardManager;
+    private final Vibrator vibrator;
 
     private String text;
     private String word;
@@ -53,12 +59,18 @@ public class MainViewModel extends ViewModelObservable {
                          final Retrofit retrofit,
                          final TranslationService translationService,
                          final NetworkService networkService,
-                         final PublishSubject<String> toastShowSubject) {
+                         final PublishSubject<String> toastShowSubject,
+                         final Resources resources,
+                         final ClipboardManager clipboardManager,
+                         final Vibrator vibrator) {
         this.appState = appState;
         this.retrofit = retrofit;
         this.translationService = translationService;
         this.networkService = networkService;
         this.toastShowSubject = toastShowSubject;
+        this.resources = resources;
+        this.clipboardManager = clipboardManager;
+        this.vibrator = vibrator;
         this.adapter = getEmptyAdapter();
     }
 
@@ -137,7 +149,7 @@ public class MainViewModel extends ViewModelObservable {
                     .firstElement()
                     .blockingGet();
 
-            adapter = new MyAdapter(strings, translationService, langFrom, langTo);
+            adapter = new MyAdapter(strings, translationService, clipboardManager, vibrator, toastShowSubject, resources, langFrom, langTo);
             answerPublishSubject.onNext(adapter);
             return;
         }
@@ -171,7 +183,7 @@ public class MainViewModel extends ViewModelObservable {
                 for (Suggest sg : suggest) {
                     sgList.add(sg.value);
                 }
-                adapter = new MyAdapter(sgList, translationService, langFrom, langTo);
+                adapter = new MyAdapter(sgList, translationService, clipboardManager, vibrator, toastShowSubject, resources, langFrom, langTo);
                 answerPublishSubject.onNext(adapter);
             }
 
@@ -190,6 +202,6 @@ public class MainViewModel extends ViewModelObservable {
     private MyAdapter getEmptyAdapter() {
         String langFrom = LANG_ORDER_STR[fromLanguageIx];
         String langTo = LANG_ORDER_STR[toLanguageIx];
-        return new MyAdapter(Collections.EMPTY_LIST, translationService, langFrom, langTo);
+        return new MyAdapter(Collections.EMPTY_LIST, translationService, clipboardManager, vibrator, toastShowSubject, resources, langFrom, langTo);
     }
 }
