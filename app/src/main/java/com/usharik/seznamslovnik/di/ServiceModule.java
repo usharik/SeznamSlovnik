@@ -7,6 +7,7 @@ import android.content.res.Resources;
 import android.os.Vibrator;
 
 import com.usharik.seznamslovnik.AppState;
+import com.usharik.seznamslovnik.action.Action;
 import com.usharik.seznamslovnik.dao.AppDatabase;
 import com.usharik.seznamslovnik.service.TranslationService;
 import com.usharik.seznamslovnik.service.NetworkService;
@@ -52,8 +53,8 @@ class ServiceModule {
     TranslationService provideTranslationService(AppDatabase appDatabase,
                                              AppState appState,
                                              Retrofit retrofit,
-                                             PublishSubject<String> toastShowSubject) {
-        return new TranslationService(appDatabase, appState, retrofit, toastShowSubject);
+                                             PublishSubject<Action> executeActionSubject) {
+        return new TranslationService(appDatabase, appState, retrofit, executeActionSubject);
     }
 
     @Provides
@@ -64,7 +65,7 @@ class ServiceModule {
 
     @Provides
     @Singleton
-    PublishSubject<String> provideToastShowSubject() {
+    PublishSubject<Action> provideExecuteActionSubject() {
         return PublishSubject.create();
     }
 

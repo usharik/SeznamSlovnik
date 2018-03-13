@@ -6,6 +6,8 @@ import android.databinding.Bindable;
 import android.os.Vibrator;
 import android.util.Log;
 
+import com.usharik.seznamslovnik.action.Action;
+import com.usharik.seznamslovnik.action.ShowToastAction;
 import com.usharik.seznamslovnik.adapter.MyAdapter;
 import com.usharik.seznamslovnik.service.TranslationService;
 import com.usharik.seznamslovnik.framework.ViewModelObservable;
@@ -41,7 +43,7 @@ public class MainViewModel extends ViewModelObservable {
     private final Retrofit retrofit;
     private final TranslationService translationService;
     private final NetworkService networkService;
-    private final PublishSubject<String> toastShowSubject;
+    private final PublishSubject<Action> executeActionSubject;
     private final Resources resources;
     private final ClipboardManager clipboardManager;
     private final Vibrator vibrator;
@@ -49,6 +51,7 @@ public class MainViewModel extends ViewModelObservable {
     private String text;
     private String word;
     private MyAdapter adapter;
+    private int scrollPosition;
     private int fromLanguageIx = 0;
     private int toLanguageIx = 1;
 
@@ -59,7 +62,7 @@ public class MainViewModel extends ViewModelObservable {
                          final Retrofit retrofit,
                          final TranslationService translationService,
                          final NetworkService networkService,
-                         final PublishSubject<String> toastShowSubject,
+                         final PublishSubject<Action> executeActionSubject,
                          final Resources resources,
                          final ClipboardManager clipboardManager,
                          final Vibrator vibrator) {
@@ -67,11 +70,12 @@ public class MainViewModel extends ViewModelObservable {
         this.retrofit = retrofit;
         this.translationService = translationService;
         this.networkService = networkService;
-        this.toastShowSubject = toastShowSubject;
+        this.executeActionSubject = executeActionSubject;
         this.resources = resources;
         this.clipboardManager = clipboardManager;
         this.vibrator = vibrator;
         this.adapter = getEmptyAdapter();
+        this.scrollPosition = 0;
     }
 
     @Bindable
@@ -121,8 +125,8 @@ public class MainViewModel extends ViewModelObservable {
         return answerPublishSubject;
     }
 
-    public Observable<String> getToastShowSubject() {
-        return toastShowSubject;
+    public Observable<Action> getExecuteActionSubject() {
+        return executeActionSubject;
     }
 
     public boolean isOfflineMode() {
@@ -149,7 +153,8 @@ public class MainViewModel extends ViewModelObservable {
                     .firstElement()
                     .blockingGet();
 
-            adapter = new MyAdapter(strings, translationService, clipboardManager, vibrator, toastShowSubject, resources, langFrom, langTo);
+            scrollPosition = 0;
+            adapter = new MyAdapter(strings, translationService, clipboardManager, vibrator, executeActionSubject, resources, langFrom, langTo);
             answerPublishSubject.onNext(adapter);
             return;
         }
@@ -166,15 +171,16 @@ public class MainViewModel extends ViewModelObservable {
             @Override
             public void onResponse(Call<Answer> call, Response<Answer> response) {
                 if (response.code() != HTTP_OK) {
-                    Log.e(getClass().getName(), response.raw().request().url().url() + " Http error " + response.code());
-                    toastShowSubject.onNext(response.raw().request().url().url() + " Http error " + response.code());
+                    String message = response.raw().request().url().url() + " Http error " + response.code();
+                    Log.e(getClass().getName(), message);
+                    executeActionSubject.onNext(new ShowToastAction(message));
                     return;
                 }
                 if (response.body() == null ||
                         response.body().result == null ||
                         response.body().result.size() == 0) {
                     Log.e(getClass().getName(), "Null answer");
-                    toastShowSubject.onNext("Null answer");
+                    executeActionSubject.onNext(new ShowToastAction("Null answer"));
                     return;
                 }
                 List<Suggest> suggest = response.body().result.get(0).suggest;
@@ -183,14 +189,15 @@ public class MainViewModel extends ViewModelObservable {
                 for (Suggest sg : suggest) {
                     sgList.add(sg.value);
                 }
-                adapter = new MyAdapter(sgList, translationService, clipboardManager, vibrator, toastShowSubject, resources, langFrom, langTo);
+                scrollPosition = 0;
+                adapter = new MyAdapter(sgList, translationService, clipboardManager, vibrator, executeActionSubject, resources, langFrom, langTo);
                 answerPublishSubject.onNext(adapter);
             }
 
             @Override
             public void onFailure(Call<Answer> call, Throwable t) {
                 Log.e(getClass().getName(), t.getLocalizedMessage());
-                toastShowSubject.onNext(t.getLocalizedMessage());
+                executeActionSubject.onNext(new ShowToastAction(t.getLocalizedMessage()));
             }
         });
     }
@@ -199,9 +206,18 @@ public class MainViewModel extends ViewModelObservable {
         return adapter;
     }
 
+    public int getScrollPosition() {
+        return scrollPosition;
+    }
+
+    public MainViewModel setScrollPosition(int scrollPosition) {
+        this.scrollPosition = scrollPosition;
+        return this;
+    }
+
     private MyAdapter getEmptyAdapter() {
         String langFrom = LANG_ORDER_STR[fromLanguageIx];
         String langTo = LANG_ORDER_STR[toLanguageIx];
-        return new MyAdapter(Collections.EMPTY_LIST, translationService, clipboardManager, vibrator, toastShowSubject, resources, langFrom, langTo);
+        return new MyAdapter(Collections.EMPTY_LIST, translationService, clipboardManager, vibrator, executeActionSubject, resources, langFrom, langTo);
     }
 }

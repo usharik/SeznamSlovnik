@@ -8,4 +8,10 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="PopupMenu" parent="@android:style/Widget.PopupMenu">
+        <item name="android:popupBackground">@android:color/white</item>
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:listPreferredItemHeightSmall">40dp</item>
+    </style>
+
 </resources>

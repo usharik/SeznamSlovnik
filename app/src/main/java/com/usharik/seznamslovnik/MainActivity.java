@@ -1,7 +1,9 @@
 package com.usharik.seznamslovnik;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.net.Uri;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -10,6 +12,8 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
+import com.usharik.seznamslovnik.action.OpenUrlInBrowserAction;
+import com.usharik.seznamslovnik.action.ShowToastAction;
 import com.usharik.seznamslovnik.databinding.ActivityMainBinding;
 import com.usharik.seznamslovnik.framework.ViewActivity;
 
@@ -17,6 +21,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 
@@ -39,6 +44,7 @@ public class MainActivity extends ViewActivity<MainViewModel> {
         binding.setViewModel(getViewModel());
         binding.myRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         binding.myRecyclerView.setAdapter(getViewModel().getAdapter());
+        binding.myRecyclerView.getLayoutManager().scrollToPosition(getViewModel().getScrollPosition());
         fromLanguageIx = getViewModel().getFromLanguageIx();
         toLanguageIx = getViewModel().getToLanguageIx();
         binding.btFrom.setImageDrawable(getResources().getDrawable(LANG_ORDER[fromLanguageIx], null));
@@ -50,31 +56,13 @@ public class MainActivity extends ViewActivity<MainViewModel> {
         updateTitle();
 
         compositeDisposable.add(getViewModel().getAnswerPublishSubject().subscribe((adapter) -> binding.myRecyclerView.setAdapter(adapter)));
-        compositeDisposable.add(getViewModel().getToastShowSubject()
-                .window(1500, TimeUnit.MILLISECONDS)
-                .subscribe((messages) -> {
-                    messages
-                            .toList()
-                            .map(HashSet::new)
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe((set) -> {
-                                if (set.isEmpty()) {
-                                    return;
-                                }
-                                Iterator<String> iterator = set.iterator();
-                                StringBuilder sb = new StringBuilder();
-                                for (int i=0; i<set.size(); i++) {
-                                    String template = i < set.size()-1 ? "%s%n" : "%s";
-                                    sb.append(String.format(template, iterator.next()));
-                                }
-                                Toast.makeText(getApplicationContext(), sb, Toast.LENGTH_SHORT).show();
-                            });
-                }));
     }
 
     @Override
     protected void onPause() {
         compositeDisposable.clear();
+        int position = ((LinearLayoutManager) binding.myRecyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
+        getViewModel().setScrollPosition(position);
         super.onPause();
     }
 

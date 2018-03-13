@@ -4,6 +4,8 @@ import android.util.Log;
 import android.util.Pair;
 
 import com.usharik.seznamslovnik.AppState;
+import com.usharik.seznamslovnik.action.Action;
+import com.usharik.seznamslovnik.action.ShowToastAction;
 import com.usharik.seznamslovnik.dao.AppDatabase;
 import com.usharik.seznamslovnik.dao.TranslationStorageDao;
 import com.usharik.seznamslovnik.dao.Word;
@@ -47,16 +49,16 @@ public class TranslationService {
     private final TranslationStorageDao dao;
     private final AppState appState;
     private final Retrofit retrofit;
-    private final PublishSubject<String> toastShowSubject;
+    private final PublishSubject<Action> executeActionSubject;
 
     public TranslationService(final AppDatabase appDatabase,
                               final AppState appState,
                               final Retrofit retrofit,
-                              final PublishSubject<String> toastShowSubject) {
+                              final PublishSubject<Action> executeActionSubject) {
         this.dao = appDatabase.translationStorageDao();
         this.appState = appState;
         this.retrofit = retrofit;
-        this.toastShowSubject = toastShowSubject;
+        this.executeActionSubject = executeActionSubject;
         storeSubject.observeOn(Schedulers.io())
                 .subscribe((wrp) -> {
                     try {
@@ -132,7 +134,7 @@ public class TranslationService {
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.code() != HTTP_OK) {
                     Log.e(getClass().getName(), "Http error " + response.code());
-                    toastShowSubject.onNext("Http error " + response.code());
+                    executeActionSubject.onNext(new ShowToastAction("Http error " + response.code()));
                     return;
                 }
                 try {
@@ -175,7 +177,7 @@ public class TranslationService {
                     translationPublisher.onNext(Pair.create(word, transList));
                 } catch (Exception e) {
                     Log.e(getClass().getName(), e.getLocalizedMessage());
-                    toastShowSubject.onNext(e.getLocalizedMessage());
+                    executeActionSubject.onNext(new ShowToastAction(e.getLocalizedMessage()));
                     translationPublisher.onNext(Pair.create(question, EMPTY_STR_LIST));
                 } finally {
                     translationPublisher.onComplete();
@@ -185,7 +187,7 @@ public class TranslationService {
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Log.e(getClass().getName(), t.getLocalizedMessage());
-                toastShowSubject.onNext(t.getLocalizedMessage());
+                executeActionSubject.onNext(new ShowToastAction(t.getLocalizedMessage()));
             }
         });
         return translationPublisher.singleOrError();

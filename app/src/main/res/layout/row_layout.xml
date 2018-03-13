@@ -25,4 +25,15 @@
         app:layout_constraintTop_toBottomOf="@+id/word"
         tools:text="translation1, translation2, translation3" />
 
+    <TextView
+        android:id="@+id/optionsMenuButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="12dp"
+        android:paddingEnd="6dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="&#8942;" />
+
 </android.support.constraint.ConstraintLayout>
