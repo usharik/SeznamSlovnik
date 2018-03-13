@@ -8,9 +8,11 @@ import com.usharik.seznamslovnik.dao.AppDatabase;
 import com.usharik.seznamslovnik.dao.TranslationStorageDao;
 import com.usharik.seznamslovnik.dao.Word;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
@@ -60,14 +62,14 @@ public class TranslationService {
                     try {
                         dao.insertTranslationsForWord(wrp.word, wrp.langFrom, wrp.translations, wrp.langTo);
                     } catch (Exception ex) {
-                        Log.e("!!!!!!!!!!!!!!!!!", ex.getLocalizedMessage());
+                        Log.e(getClass().getName(), ex.getLocalizedMessage());
                     }
                 });
     }
 
     public Observable<List<String>> getSuggestions(String template, String langFrom, int limit) {
         return Observable.create((emitter) -> {
-            List<String> suggestions = dao.getSuggestions(template, langFrom, limit);
+            List<String> suggestions = dao.getSuggestions(StringUtils.stripAccents(template.trim()), template.trim(), langFrom, limit);
             emitter.onNext(suggestions);
             emitter.onComplete();
         });
@@ -143,19 +145,39 @@ public class TranslationService {
                     }
 
                     Elements elements = html.body().select("div#fastMeanings");
-                    List<String> transList = Collections.EMPTY_LIST;
+                    List<String> transList = EMPTY_STR_LIST;
                     if (elements.size() > 0) {
                         transList = extractTranslations(elements.get(0).children());
-                        if (transList.size() > 0) {
-                            storeTranslation(word, langFrom, transList, langTo);
+                    }
+                    if (transList.isEmpty()) {
+                        elements = html.body().select("span.arrow");
+                        if (elements.size() > 0) {
+                            transList = new ArrayList<>();
+                            for (Element el : elements) {
+                                Node node = el.nextSibling();
+                                if (node == null) {
+                                    continue;
+                                }
+                                String text = node.toString();
+                                if (text == null) {
+                                    continue;
+                                }
+                                if (text.length() > 150) {
+                                    text = text.substring(0, 150);
+                                }
+                                transList.add(text.trim());
+                            }
                         }
                     }
+                    if (transList.size() > 0) {
+                        storeTranslation(word, langFrom, transList, langTo);
+                    }
                     translationPublisher.onNext(Pair.create(word, transList));
-                    translationPublisher.onComplete();
                 } catch (Exception e) {
                     Log.e(getClass().getName(), e.getLocalizedMessage());
                     toastShowSubject.onNext(e.getLocalizedMessage());
-                    translationPublisher.onNext(Pair.create(question, Collections.EMPTY_LIST));
+                    translationPublisher.onNext(Pair.create(question, EMPTY_STR_LIST));
+                } finally {
                     translationPublisher.onComplete();
                 }
             }
