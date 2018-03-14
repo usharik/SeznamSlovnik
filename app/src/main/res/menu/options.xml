@@ -5,4 +5,12 @@
         android:id="@+id/offlineMode"
         android:title="@string/offline_mode"
         android:checkable="true" />
+
+    <item
+        android:id="@+id/backup"
+        android:title="@string/backup" />
+
+    <item
+        android:id="@+id/restore"
+        android:title="@string/restore" />
 </menu>

@@ -1,34 +1,42 @@
 package com.usharik.seznamslovnik;
 
+import android.Manifest;
 import android.app.Activity;
-import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
-import android.net.Uri;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Toast;
 
-import com.usharik.seznamslovnik.action.OpenUrlInBrowserAction;
-import com.usharik.seznamslovnik.action.ShowToastAction;
+import com.usharik.seznamslovnik.action.Action;
+import com.usharik.seznamslovnik.action.BackupDictionaryAction;
+import com.usharik.seznamslovnik.action.RestoreDictionaryAction;
 import com.usharik.seznamslovnik.databinding.ActivityMainBinding;
 import com.usharik.seznamslovnik.framework.ViewActivity;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
 
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.subjects.PublishSubject;
 
 public class MainActivity extends ViewActivity<MainViewModel> {
 
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
+    @Inject
+    PublishSubject<Action> executeActionSubject;
+
     private ActivityMainBinding binding;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private PublishSubject<Boolean> permissionRequestSubject;
 
     private int fromLanguageIx = 0;
     private int toLanguageIx = 1;
@@ -81,9 +89,63 @@ public class MainActivity extends ViewActivity<MainViewModel> {
                 getViewModel().setOfflineMode(item.isChecked());
                 updateTitle();
                 return true;
+            case R.id.backup:
+                if (isExternalStoragePermitted()) {
+                    executeActionSubject.onNext(new BackupDictionaryAction(this));
+                    return true;
+                }
+                permissionRequestSubject = PublishSubject.create();
+                permissionRequestSubject.subscribe((allowed) -> {
+                    if (allowed) {
+                        executeActionSubject.onNext(new BackupDictionaryAction(this));
+                    }
+                });
+                requestStoragePermissions();
+                return true;
+            case R.id.restore:
+                if (isExternalStoragePermitted()) {
+                    executeActionSubject.onNext(new RestoreDictionaryAction(this));
+                    return true;
+                }
+                permissionRequestSubject = PublishSubject.create();
+                permissionRequestSubject.subscribe((allowed) -> {
+                    if (allowed) {
+                        executeActionSubject.onNext(new RestoreDictionaryAction(this));
+                    }
+                });
+                requestStoragePermissions();
+                return true;
             default:
                 return true;
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grants) {
+        if (requestCode == REQUEST_EXTERNAL_STORAGE) {
+            for (int permission : grants) {
+                if (permission != PackageManager.PERMISSION_GRANTED) {
+                    permissionRequestSubject.onNext(false);
+                    permissionRequestSubject.onComplete();
+                    return;
+                }
+            }
+            permissionRequestSubject.onNext(true);
+            permissionRequestSubject.onComplete();
+        }
+    }
+
+    private boolean isExternalStoragePermitted() {
+        int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        return permission == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void requestStoragePermissions() {
+        ActivityCompat.requestPermissions(
+                this,
+                PERMISSIONS_STORAGE,
+                REQUEST_EXTERNAL_STORAGE
+        );
     }
 
     private void updateTitle() {

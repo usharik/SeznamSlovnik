@@ -6,7 +6,7 @@ import android.util.Pair;
 import com.usharik.seznamslovnik.AppState;
 import com.usharik.seznamslovnik.action.Action;
 import com.usharik.seznamslovnik.action.ShowToastAction;
-import com.usharik.seznamslovnik.dao.AppDatabase;
+import com.usharik.seznamslovnik.dao.DatabaseManager;
 import com.usharik.seznamslovnik.dao.TranslationStorageDao;
 import com.usharik.seznamslovnik.dao.Word;
 
@@ -46,32 +46,36 @@ public class TranslationService {
     private static final List<String> EMPTY_STR_LIST = Collections.unmodifiableList(new ArrayList<>());
 
     private final PublishSubject<Wrapper> storeSubject = PublishSubject.create();
-    private final TranslationStorageDao dao;
+    private final DatabaseManager databaseManager;
     private final AppState appState;
     private final Retrofit retrofit;
     private final PublishSubject<Action> executeActionSubject;
 
-    public TranslationService(final AppDatabase appDatabase,
+    public TranslationService(final DatabaseManager databaseManager,
                               final AppState appState,
                               final Retrofit retrofit,
                               final PublishSubject<Action> executeActionSubject) {
-        this.dao = appDatabase.translationStorageDao();
+        this.databaseManager = databaseManager;
         this.appState = appState;
         this.retrofit = retrofit;
         this.executeActionSubject = executeActionSubject;
         storeSubject.observeOn(Schedulers.io())
                 .subscribe((wrp) -> {
                     try {
-                        dao.insertTranslationsForWord(wrp.word, wrp.langFrom, wrp.translations, wrp.langTo);
+                        getDao().insertTranslationsForWord(wrp.word, wrp.langFrom, wrp.translations, wrp.langTo);
                     } catch (Exception ex) {
                         Log.e(getClass().getName(), ex.getLocalizedMessage());
                     }
                 });
     }
 
+    private TranslationStorageDao getDao() {
+        return databaseManager.getActiveDbInstance().translationStorageDao();
+    }
+
     public Observable<List<String>> getSuggestions(String template, String langFrom, int limit) {
         return Observable.create((emitter) -> {
-            List<String> suggestions = dao.getSuggestions(StringUtils.stripAccents(template.trim()), template.trim(), langFrom, limit);
+            List<String> suggestions = getDao().getSuggestions(StringUtils.stripAccents(template.trim()), template.trim(), langFrom, limit);
             emitter.onNext(suggestions);
             emitter.onComplete();
         });
@@ -86,7 +90,7 @@ public class TranslationService {
                 .subscribeOn(Schedulers.io())
                 .flatMap((exists) -> {
                     if (exists) {
-                        return dao.getTranslations(question, langFrom, langTo, 1000)
+                        return getDao().getTranslations(question, langFrom, langTo, 1000)
                                 .flatMap((list) -> Maybe.just(Pair.create(question, list)))
                                 .toSingle();
                     } else if (!appState.isOfflineMode) {
@@ -98,13 +102,13 @@ public class TranslationService {
     }
 
     private Single<Boolean> existsActualTranslation(String question, String langFrom, String langTo) {
-        return dao.getWord(question, langFrom)
+        return getDao().getWord(question, langFrom)
                 .switchIfEmpty(Single.just(Word.NULL_WORD))
                 .flatMap((word) -> {
                     if (word == Word.NULL_WORD || !checkTranslationAge(word)) {
                         return Single.just(EMPTY_STR_LIST);
                     } else {
-                        return dao.getTranslations(question, langFrom, langTo, 1)
+                        return getDao().getTranslations(question, langFrom, langTo, 1)
                                 .switchIfEmpty(Single.just(EMPTY_STR_LIST));
                     }
                 })

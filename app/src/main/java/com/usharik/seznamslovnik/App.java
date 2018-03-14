@@ -7,8 +7,11 @@ import android.net.Uri;
 import android.widget.Toast;
 
 import com.usharik.seznamslovnik.action.Action;
+import com.usharik.seznamslovnik.action.BackupDictionaryAction;
 import com.usharik.seznamslovnik.action.OpenUrlInBrowserAction;
+import com.usharik.seznamslovnik.action.RestoreDictionaryAction;
 import com.usharik.seznamslovnik.action.ShowToastAction;
+import com.usharik.seznamslovnik.dao.DatabaseManager;
 import com.usharik.seznamslovnik.di.DaggerAppComponent;
 
 import java.util.HashSet;
@@ -35,6 +38,9 @@ public class App extends Application implements HasActivityInjector {
     @Inject
     PublishSubject<Action> executeActionSubject;
 
+    @Inject
+    DatabaseManager databaseManager;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -56,6 +62,16 @@ public class App extends Application implements HasActivityInjector {
                 browserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(browserIntent);
                 return Observable.empty();
+
+            case BackupDictionaryAction.BACKUP_DICTIONARY_ACTION: {
+                databaseManager.backup();
+                return Observable.just("Dictionary backup completed");
+            }
+
+            case RestoreDictionaryAction.RESTORE_DICTIONARY_ACTION: {
+                databaseManager.restore();
+                return Observable.just("Dictionary restore completed");
+            }
 
             default:
                 return Observable.empty();

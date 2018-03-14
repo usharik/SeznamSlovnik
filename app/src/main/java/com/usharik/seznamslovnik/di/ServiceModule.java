@@ -8,7 +8,7 @@ import android.os.Vibrator;
 
 import com.usharik.seznamslovnik.AppState;
 import com.usharik.seznamslovnik.action.Action;
-import com.usharik.seznamslovnik.dao.AppDatabase;
+import com.usharik.seznamslovnik.dao.DatabaseManager;
 import com.usharik.seznamslovnik.service.TranslationService;
 import com.usharik.seznamslovnik.service.NetworkService;
 
@@ -44,17 +44,17 @@ class ServiceModule {
 
     @Provides
     @Singleton
-    AppDatabase provideAppDatabase(Application application) {
-        return AppDatabase.getAppDatabase(application);
+    DatabaseManager provideDatabaseManager(Application application) {
+        return new DatabaseManager(application);
     }
 
     @Provides
     @Singleton
-    TranslationService provideTranslationService(AppDatabase appDatabase,
+    TranslationService provideTranslationService(DatabaseManager databaseManager,
                                              AppState appState,
                                              Retrofit retrofit,
                                              PublishSubject<Action> executeActionSubject) {
-        return new TranslationService(appDatabase, appState, retrofit, executeActionSubject);
+        return new TranslationService(databaseManager, appState, retrofit, executeActionSubject);
     }
 
     @Provides

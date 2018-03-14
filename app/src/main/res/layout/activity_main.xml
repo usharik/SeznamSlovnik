@@ -48,6 +48,7 @@
             android:layout_height="57dp"
             android:hint="@string/word_to_translate"
             android:inputType="text"
+            android:imeOptions="actionDone"
             android:onTextChanged="@{(s, start, before, count) -> viewModel.onTextChanged(s, start, before, count)}"
             android:text="@={viewModel.word}"
             app:layout_constraintEnd_toStartOf="@+id/btTo"

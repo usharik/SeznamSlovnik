@@ -18,10 +18,12 @@ import java.util.Calendar;
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
 
+    static final String DB_NAME = "slovnik-database";
+
     public abstract TranslationStorageDao translationStorageDao();
 
-    public static AppDatabase getAppDatabase(Context context) {
-        return Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "slovnik-database")
+    static AppDatabase getAppDatabase(Context context) {
+        return Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, DB_NAME)
                 .addMigrations(MIGRATION_2_3)
                 .build();
     }

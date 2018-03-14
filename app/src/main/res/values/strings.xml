@@ -6,8 +6,11 @@
     <string name="title_notifications">Notifications</string>
     <string name="word_to_translate">Enter word to translate</string>
     <string name="offline_mode">Offline mode</string>
+    <string name="backup">Backup dictionary</string>
+    <string name="restore">Restore dictionary</string>
     <string name="translation_is_copied">"%s" is copied to clipboard</string>
     <string name="open_in_browser">Open in web browser</string>
     <string name="copy_all_to_clipboard">Copy all translation to clipboard</string>
     <string name="edit_translation">Edit translation</string>
+    <string name="OK">OK</string>
 </resources>
