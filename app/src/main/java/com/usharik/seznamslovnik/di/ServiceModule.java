@@ -3,6 +3,7 @@ package com.usharik.seznamslovnik.di;
 import android.app.Application;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Vibrator;
 
@@ -85,5 +86,11 @@ class ServiceModule {
     @Singleton
     Resources provideResources(Application application) {
         return application.getResources();
+    }
+
+    @Provides
+    @Singleton
+    SharedPreferences provideSharedPrefences(Application application) {
+        return application.getSharedPreferences("seznam_slovnik.prefences", Context.MODE_PRIVATE);
     }
 }

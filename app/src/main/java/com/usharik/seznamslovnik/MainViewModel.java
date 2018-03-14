@@ -1,6 +1,7 @@
 package com.usharik.seznamslovnik;
 
 import android.content.ClipboardManager;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.databinding.Bindable;
 import android.os.Vibrator;
@@ -39,6 +40,8 @@ import static java.net.HttpURLConnection.HTTP_OK;
 
 public class MainViewModel extends ViewModelObservable {
 
+    private static final String OFFLINE_MODE_PREF_KEY = "isOffline";
+
     private final AppState appState;
     private final Retrofit retrofit;
     private final TranslationService translationService;
@@ -47,6 +50,7 @@ public class MainViewModel extends ViewModelObservable {
     private final Resources resources;
     private final ClipboardManager clipboardManager;
     private final Vibrator vibrator;
+    private final SharedPreferences sharedPreferences;
 
     private String text;
     private String word;
@@ -65,7 +69,8 @@ public class MainViewModel extends ViewModelObservable {
                          final PublishSubject<Action> executeActionSubject,
                          final Resources resources,
                          final ClipboardManager clipboardManager,
-                         final Vibrator vibrator) {
+                         final Vibrator vibrator,
+                         final SharedPreferences sharedPreferences) {
         this.appState = appState;
         this.retrofit = retrofit;
         this.translationService = translationService;
@@ -74,8 +79,10 @@ public class MainViewModel extends ViewModelObservable {
         this.resources = resources;
         this.clipboardManager = clipboardManager;
         this.vibrator = vibrator;
+        this.sharedPreferences = sharedPreferences;
         this.adapter = getEmptyAdapter();
         this.scrollPosition = 0;
+        this.appState.isOfflineMode = this.sharedPreferences.getBoolean(OFFLINE_MODE_PREF_KEY, false);
     }
 
     @Bindable
@@ -219,5 +226,13 @@ public class MainViewModel extends ViewModelObservable {
         String langFrom = LANG_ORDER_STR[fromLanguageIx];
         String langTo = LANG_ORDER_STR[toLanguageIx];
         return new MyAdapter(Collections.EMPTY_LIST, translationService, clipboardManager, vibrator, executeActionSubject, resources, langFrom, langTo);
+    }
+
+    @Override
+    public void onCleared() {
+        super.onCleared();
+        SharedPreferences.Editor edit = sharedPreferences.edit();
+        edit.putBoolean(OFFLINE_MODE_PREF_KEY, appState.isOfflineMode);
+        edit.apply();
     }
 }

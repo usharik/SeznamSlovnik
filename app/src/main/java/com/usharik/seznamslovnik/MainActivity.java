@@ -78,6 +78,8 @@ public class MainActivity extends ViewActivity<MainViewModel> {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.options, menu);
+        MenuItem item = menu.findItem(R.id.offlineMode);
+        item.setChecked(getViewModel().isOfflineMode());
         return true;
     }
 
@@ -85,7 +87,7 @@ public class MainActivity extends ViewActivity<MainViewModel> {
     public boolean onOptionsItemSelected(MenuItem item){
         switch(item.getItemId()) {
             case R.id.offlineMode:
-                item.setChecked(!item.isChecked());
+                item.setChecked(!getViewModel().isOfflineMode());
                 getViewModel().setOfflineMode(item.isChecked());
                 updateTitle();
                 return true;
