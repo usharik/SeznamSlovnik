@@ -49,6 +49,7 @@
             android:hint="@string/word_to_translate"
             android:inputType="text"
             android:imeOptions="actionDone"
+            android:selectAllOnFocus="true"
             android:onTextChanged="@{(s, start, before, count) -> viewModel.onTextChanged(s, start, before, count)}"
             android:text="@={viewModel.word}"
             app:layout_constraintEnd_toStartOf="@+id/btTo"
@@ -71,7 +72,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/input"
             app:layout_constraintVertical_bias="0.51" />
-
 
     </android.support.constraint.ConstraintLayout>
 

@@ -90,6 +90,9 @@ public class MainActivity extends ViewActivity<MainViewModel> {
                 item.setChecked(!getViewModel().isOfflineMode());
                 getViewModel().setOfflineMode(item.isChecked());
                 updateTitle();
+                if (!getViewModel().isOfflineMode()) {
+                    getViewModel().onTextChanged(binding.input.getText(), 0, 0, 0);
+                }
                 return true;
             case R.id.backup:
                 if (isExternalStoragePermitted()) {

@@ -2,7 +2,6 @@ package com.usharik.seznamslovnik.dao;
 
 import android.content.Context;
 import android.os.Environment;
-import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,6 +14,8 @@ import java.nio.channels.FileChannel;
  */
 
 public class DatabaseManager {
+
+    private static final String BACKUP_FOLDER = "/Seznam-Slovnik/";
 
     private Context context;
     private AppDatabase instance;
@@ -37,34 +38,42 @@ public class DatabaseManager {
         instance.close();
     }
 
-    public void backup() {
+    public void backup() throws IOException {
         close();
-        String sourcePath = Environment.getDataDirectory() + "/data/" + context.getPackageName() + "/databases/";
-        String destPath = Environment.getExternalStorageDirectory() + "/Download/";
+        File folder = new File(Environment.getExternalStorageDirectory() + BACKUP_FOLDER);
+        boolean success = true;
+        if (!folder.exists()) {
+            success = folder.mkdirs();
+        }
+        if (!success) {
+            throw new RuntimeException("Can't create folder for backup");
+        }
+        String sourcePath = getDatabasePath();
+        String destPath = Environment.getExternalStorageDirectory() + BACKUP_FOLDER;
         copyFile(sourcePath, AppDatabase.DB_NAME, destPath, AppDatabase.DB_NAME);
     }
 
-    public void restore() {
+    public void restore() throws IOException {
         close();
-        String sourcePath = Environment.getExternalStorageDirectory() + "/Download/";
-        String destPath = Environment.getDataDirectory() + "/data/" + context.getPackageName() + "/databases/";
+        String sourcePath = Environment.getExternalStorageDirectory() + BACKUP_FOLDER;
+        String destPath = getDatabasePath();
         copyFile(sourcePath, AppDatabase.DB_NAME, destPath, AppDatabase.DB_NAME);
+    }
+
+    private String getDatabasePath() {
+        return Environment.getDataDirectory() + "/data/" + context.getPackageName() + "/databases/";
     }
 
     private void copyFile(String sourcePath,
-                         String sourceFileName,
-                         String destPath,
-                         String detFileName){
+                          String sourceFileName,
+                          String destPath,
+                          String detFileName) throws IOException {
         File sourceFile = new File(sourcePath, sourceFileName);
         File destFile = new File(destPath, detFileName);
-        try {
-            FileChannel source = new FileInputStream(sourceFile).getChannel();
-            FileChannel destination = new FileOutputStream(destFile).getChannel();
-            destination.transferFrom(source, 0, source.size());
-            source.close();
-            destination.close();
-        } catch(IOException e) {
-            Log.e(getClass().getName(), e.getLocalizedMessage());
-        }
+        FileChannel source = new FileInputStream(sourceFile).getChannel();
+        FileChannel destination = new FileOutputStream(destFile).getChannel();
+        destination.transferFrom(source, 0, source.size());
+        source.close();
+        destination.close();
     }
 }

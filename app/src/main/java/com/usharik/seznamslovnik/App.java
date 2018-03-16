@@ -64,13 +64,25 @@ public class App extends Application implements HasActivityInjector {
                 return Observable.empty();
 
             case BackupDictionaryAction.BACKUP_DICTIONARY_ACTION: {
-                databaseManager.backup();
-                return Observable.just("Dictionary backup completed");
+                String message;
+                try {
+                    databaseManager.backup();
+                    message = "Dictionary backup completed";
+                } catch (Exception ex) {
+                    message = ex.getLocalizedMessage();
+                }
+                return Observable.just(message);
             }
 
             case RestoreDictionaryAction.RESTORE_DICTIONARY_ACTION: {
-                databaseManager.restore();
-                return Observable.just("Dictionary restore completed");
+                String message;
+                try {
+                    databaseManager.restore();
+                    message = "Dictionary restore completed";
+                } catch (Exception ex) {
+                    message = ex.getLocalizedMessage();
+                }
+                return Observable.just(message);
             }
 
             default:
