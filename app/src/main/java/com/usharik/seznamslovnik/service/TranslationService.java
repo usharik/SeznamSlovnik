@@ -105,7 +105,7 @@ public class TranslationService {
         return getDao().getWord(question, langFrom)
                 .switchIfEmpty(Single.just(Word.NULL_WORD))
                 .flatMap((word) -> {
-                    if (word == Word.NULL_WORD || !checkTranslationAge(word)) {
+                    if (word == Word.NULL_WORD || (isOldTranslation(word) && !appState.isOfflineMode)) {
                         return Single.just(EMPTY_STR_LIST);
                     } else {
                         return getDao().getTranslations(question, langFrom, langTo, 1)
@@ -115,9 +115,9 @@ public class TranslationService {
                 .flatMap((list) -> Single.just(!list.isEmpty()));
     }
 
-    private boolean checkTranslationAge(Word word) {
+    private boolean isOldTranslation(Word word) {
         Date curr = Calendar.getInstance().getTime();
-        return TimeUnit.DAYS.convert(curr.getTime() - word.getLoadDate().getTime(), TimeUnit.MILLISECONDS) < 7;
+        return TimeUnit.DAYS.convert(curr.getTime() - word.getLoadDate().getTime(), TimeUnit.MILLISECONDS) >= 7;
     }
 
     private void storeTranslation(String word, String langFrom, List<String> translations, String langTo) {

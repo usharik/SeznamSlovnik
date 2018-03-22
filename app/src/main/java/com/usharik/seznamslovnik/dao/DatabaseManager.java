@@ -70,6 +70,9 @@ public class DatabaseManager {
                           String detFileName) throws IOException {
         File sourceFile = new File(sourcePath, sourceFileName);
         File destFile = new File(destPath, detFileName);
+        if (!destFile.exists()) {
+            destFile.createNewFile();
+        }
         FileChannel source = new FileInputStream(sourceFile).getChannel();
         FileChannel destination = new FileOutputStream(destFile).getChannel();
         destination.transferFrom(source, 0, source.size());

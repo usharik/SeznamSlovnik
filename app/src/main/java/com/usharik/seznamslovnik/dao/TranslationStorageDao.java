@@ -8,6 +8,8 @@ import android.arch.persistence.room.Transaction;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Maybe;
@@ -56,6 +58,8 @@ public abstract class TranslationStorageDao {
         Long id = getWordId(request, langFrom);
         if (id == null) {
             id = insertWord(new Word(request, StringUtils.stripAccents(request), langFrom));
+        } else {
+            updateWordLoadDate(id, Calendar.getInstance().getTime());
         }
         Translation trn[] = new Translation[translations.size()];
         for (int i = 0; i < trn.length; i++) {
@@ -63,6 +67,11 @@ public abstract class TranslationStorageDao {
         }
         insertAllTranslations(trn);
     }
+
+    @Query("update WORD " +
+            "  set load_date = :loadDate " +
+            "where id = :id")
+    public abstract long updateWordLoadDate(long id, Date loadDate);
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     public abstract long insertWord(Word word);
