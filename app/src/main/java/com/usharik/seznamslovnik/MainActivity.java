@@ -96,26 +96,26 @@ public class MainActivity extends ViewActivity<MainViewModel> {
                 return true;
             case R.id.backup:
                 if (isExternalStoragePermitted()) {
-                    executeActionSubject.onNext(new BackupDictionaryAction(this));
+                    executeActionSubject.onNext(new BackupDictionaryAction());
                     return true;
                 }
                 permissionRequestSubject = PublishSubject.create();
                 permissionRequestSubject.subscribe((allowed) -> {
                     if (allowed) {
-                        executeActionSubject.onNext(new BackupDictionaryAction(this));
+                        executeActionSubject.onNext(new BackupDictionaryAction());
                     }
                 });
                 requestStoragePermissions();
                 return true;
             case R.id.restore:
                 if (isExternalStoragePermitted()) {
-                    executeActionSubject.onNext(new RestoreDictionaryAction(this));
+                    executeActionSubject.onNext(new RestoreDictionaryAction());
                     return true;
                 }
                 permissionRequestSubject = PublishSubject.create();
                 permissionRequestSubject.subscribe((allowed) -> {
                     if (allowed) {
-                        executeActionSubject.onNext(new RestoreDictionaryAction(this));
+                        executeActionSubject.onNext(new RestoreDictionaryAction());
                     }
                 });
                 requestStoragePermissions();

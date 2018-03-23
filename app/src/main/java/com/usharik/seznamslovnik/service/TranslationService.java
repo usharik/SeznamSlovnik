@@ -9,6 +9,8 @@ import com.usharik.seznamslovnik.action.ShowToastAction;
 import com.usharik.seznamslovnik.dao.DatabaseManager;
 import com.usharik.seznamslovnik.dao.TranslationStorageDao;
 import com.usharik.seznamslovnik.dao.Word;
+import com.usharik.seznamslovnik.model.Answer;
+import com.usharik.seznamslovnik.model.Suggest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
@@ -25,7 +27,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Maybe;
-import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
@@ -73,12 +74,64 @@ public class TranslationService {
         return databaseManager.getActiveDbInstance().translationStorageDao();
     }
 
-    public Observable<List<String>> getSuggestions(String template, String langFrom, int limit) {
-        return Observable.create((emitter) -> {
-            List<String> suggestions = getDao().getSuggestions(StringUtils.stripAccents(template.trim()), template.trim(), langFrom, limit);
-            emitter.onNext(suggestions);
-            emitter.onComplete();
+    public Maybe<List<String>> getSuggestions(String template, String langFrom, String langTo, int limit, boolean isOffline) {
+        if (isOffline) {
+            return getOfflineSuggestions(template, langFrom, 1000);
+        } else {
+            return getOnlineSuggestions(template, langFrom, langTo, limit);
+        }
+    }
+
+    private Maybe<List<String>> getOfflineSuggestions(String template, String langFrom, int limit) {
+        String trimmed = template.trim();
+        return getDao().getSuggestions(StringUtils.stripAccents(trimmed), trimmed, langFrom, limit);
+    }
+
+    private Maybe<List<String>> getOnlineSuggestions(String template, String langFrom, String langTo, int limit) {
+        PublishSubject<List<String>> publishSubject = PublishSubject.create();
+        APIInterface apiInterface = retrofit.create(APIInterface.class);
+        Call<Answer> call = apiInterface.doGetSuggestions(
+                langFrom,
+                langTo,
+                template,
+                "json",
+                1,
+                limit);
+        call.enqueue(new Callback<Answer>() {
+            @Override
+            public void onResponse(Call<Answer> call, Response<Answer> response) {
+                if (response.code() != HTTP_OK) {
+                    String message = response.raw().request().url().url() + " Http error " + response.code();
+                    Log.e(getClass().getName(), message);
+                    executeActionSubject.onNext(new ShowToastAction(message));
+                    return;
+                }
+                if (response.body() == null ||
+                        response.body().result == null ||
+                        response.body().result.size() == 0) {
+                    Log.e(getClass().getName(), "Null answer");
+                    executeActionSubject.onNext(new ShowToastAction("Null answer"));
+                    return;
+                }
+                List<Suggest> suggest = response.body().result.get(0).suggest;
+                List<String> sgList = new ArrayList<>();
+                sgList.add(template);
+                for (Suggest sg : suggest) {
+                    sgList.add(sg.value);
+                }
+                publishSubject.onNext(sgList);
+                publishSubject.onComplete();
+            }
+
+            @Override
+            public void onFailure(Call<Answer> call, Throwable t) {
+                Log.e(getClass().getName(), t.getLocalizedMessage());
+                executeActionSubject.onNext(new ShowToastAction(t.getLocalizedMessage()));
+                publishSubject.onNext(EMPTY_STR_LIST);
+                publishSubject.onComplete();
+            }
         });
+        return publishSubject.firstElement();
     }
 
     public Single<Pair<String, List<String>>> translate(String question, String langFrom, String langTo) {
@@ -192,6 +245,8 @@ public class TranslationService {
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Log.e(getClass().getName(), t.getLocalizedMessage());
                 executeActionSubject.onNext(new ShowToastAction(t.getLocalizedMessage()));
+                translationPublisher.onNext(Pair.create(question, EMPTY_STR_LIST));
+                translationPublisher.onComplete();
             }
         });
         return translationPublisher.singleOrError();

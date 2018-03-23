@@ -38,7 +38,7 @@ public abstract class TranslationStorageDao {
             "      else 2 end, " +
             " word " +
             "limit :limit")
-    public abstract List<String> getSuggestions(String template1, String template2, String lang, int limit);
+    public abstract Maybe<List<String>> getSuggestions(String template1, String template2, String lang, int limit);
 
     @Query("select * from TRANSLATION")
     public abstract List<Translation> getAllTranslation();

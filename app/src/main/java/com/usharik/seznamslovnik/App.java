@@ -45,7 +45,7 @@ public class App extends Application implements HasActivityInjector {
     public void onCreate() {
         super.onCreate();
         DaggerAppComponent.builder().create(this).inject(this);
-
+        databaseManager.getActiveDbInstance();
         executeActionSubject.flatMap(this::handleActions)
                 .window(1500, TimeUnit.MILLISECONDS)
                 .subscribe(this::showAggregatedToast);

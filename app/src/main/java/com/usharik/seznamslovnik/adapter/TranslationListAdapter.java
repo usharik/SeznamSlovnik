@@ -27,7 +27,7 @@ import java.util.Map;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.subjects.PublishSubject;
 
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
+public class TranslationListAdapter extends RecyclerView.Adapter<TranslationListAdapter.ViewHolder> {
 
     private final List<String> suggestList;
     private final Map<Integer, List<String>> translations;
@@ -49,14 +49,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         }
     }
 
-    public MyAdapter(final List<String> suggestList,
-                     final TranslationService translationService,
-                     final ClipboardManager clipboardManager,
-                     final Vibrator vibrator,
-                     final PublishSubject<Action> executeActionSubject,
-                     final Resources resources,
-                     final String langFrom,
-                     final String langTo) {
+    public TranslationListAdapter(final List<String> suggestList,
+                                  final TranslationService translationService,
+                                  final ClipboardManager clipboardManager,
+                                  final Vibrator vibrator,
+                                  final PublishSubject<Action> executeActionSubject,
+                                  final Resources resources,
+                                  final String langFrom,
+                                  final String langTo) {
         this.suggestList = suggestList;
         this.translationService = translationService;
         this.clipboardManager = clipboardManager;
