@@ -10,6 +10,7 @@ import com.usharik.seznamslovnik.action.Action;
 import com.usharik.seznamslovnik.action.BackupDictionaryAction;
 import com.usharik.seznamslovnik.action.OpenUrlInBrowserAction;
 import com.usharik.seznamslovnik.action.RestoreDictionaryAction;
+import com.usharik.seznamslovnik.action.ShowEditNotesAction;
 import com.usharik.seznamslovnik.action.ShowToastAction;
 import com.usharik.seznamslovnik.dao.DatabaseManager;
 import com.usharik.seznamslovnik.di.DaggerAppComponent;
@@ -61,6 +62,11 @@ public class App extends Application implements HasActivityInjector {
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                 browserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(browserIntent);
+                return Observable.empty();
+
+            case ShowEditNotesAction.SHOW_EDIT_NOTES_ACTION:
+                Intent intent = new Intent(this, NoteActivity.class);
+                
                 return Observable.empty();
 
             case BackupDictionaryAction.BACKUP_DICTIONARY_ACTION: {

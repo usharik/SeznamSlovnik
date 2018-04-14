@@ -10,8 +10,7 @@
         android:visible="false" />
 
     <item
-        android:id="@+id/editTranslation"
-        android:title="@string/edit_translation"
-        android:visible="false" />
+        android:id="@+id/editNote"
+        android:title="@string/edit_notes" />
 
 </menu>
