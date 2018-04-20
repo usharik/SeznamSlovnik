@@ -63,7 +63,7 @@ public class MainActivity extends ViewActivity<MainViewModel> {
         });
         updateTitle();
 
-        compositeDisposable.add(getViewModel().getAnswerPublishSubject().subscribe((adapter) -> binding.myRecyclerView.setAdapter(adapter)));
+        compositeDisposable.add(getViewModel().getAnswerPublishSubject().subscribe(adapter -> binding.myRecyclerView.setAdapter(adapter)));
     }
 
     @Override
@@ -100,7 +100,7 @@ public class MainActivity extends ViewActivity<MainViewModel> {
                     return true;
                 }
                 permissionRequestSubject = PublishSubject.create();
-                permissionRequestSubject.subscribe((allowed) -> {
+                permissionRequestSubject.subscribe(allowed -> {
                     if (allowed) {
                         executeActionSubject.onNext(new BackupDictionaryAction());
                     }
@@ -113,7 +113,7 @@ public class MainActivity extends ViewActivity<MainViewModel> {
                     return true;
                 }
                 permissionRequestSubject = PublishSubject.create();
-                permissionRequestSubject.subscribe((allowed) -> {
+                permissionRequestSubject.subscribe(allowed -> {
                     if (allowed) {
                         executeActionSubject.onNext(new RestoreDictionaryAction());
                     }

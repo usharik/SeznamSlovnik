@@ -9,7 +9,6 @@ import com.usharik.seznamslovnik.action.ShowToastAction;
 import com.usharik.seznamslovnik.dao.DatabaseManager;
 import com.usharik.seznamslovnik.dao.TranslationStorageDao;
 import com.usharik.seznamslovnik.dao.Word;
-import com.usharik.seznamslovnik.model.Answer;
 import com.usharik.seznamslovnik.model.Suggest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -27,16 +26,11 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Maybe;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
-
-import static java.net.HttpURLConnection.HTTP_OK;
 
 /**
  * Created by macbook on 09.03.2018.
@@ -61,7 +55,7 @@ public class TranslationService {
         this.retrofit = retrofit;
         this.executeActionSubject = executeActionSubject;
         storeSubject.observeOn(Schedulers.io())
-                .subscribe((wrp) -> {
+                .subscribe(wrp -> {
                     try {
                         getDao().insertTranslationsForWord(wrp.word, wrp.langFrom, wrp.translations, wrp.langTo);
                     } catch (Exception ex) {
@@ -88,50 +82,22 @@ public class TranslationService {
     }
 
     private Maybe<List<String>> getOnlineSuggestions(String template, String langFrom, String langTo, int limit) {
-        PublishSubject<List<String>> publishSubject = PublishSubject.create();
-        APIInterface apiInterface = retrofit.create(APIInterface.class);
-        Call<Answer> call = apiInterface.doGetSuggestions(
+        return retrofit.create(APIInterface.class).doGetSuggestions(
                 langFrom,
                 langTo,
                 template,
                 "json",
                 1,
-                limit);
-        call.enqueue(new Callback<Answer>() {
-            @Override
-            public void onResponse(Call<Answer> call, Response<Answer> response) {
-                if (response.code() != HTTP_OK) {
-                    String message = response.raw().request().url().url() + " Http error " + response.code();
-                    Log.e(getClass().getName(), message);
-                    executeActionSubject.onNext(new ShowToastAction(message));
-                    return;
-                }
-                if (response.body() == null ||
-                        response.body().result == null ||
-                        response.body().result.size() == 0) {
-                    Log.e(getClass().getName(), "Null answer");
-                    executeActionSubject.onNext(new ShowToastAction("Null answer"));
-                    return;
-                }
-                List<Suggest> suggest = response.body().result.get(0).suggest;
-                List<String> sgList = new ArrayList<>();
-                sgList.add(template);
-                for (Suggest sg : suggest) {
-                    sgList.add(sg.value);
-                }
-                publishSubject.onNext(sgList);
-                publishSubject.onComplete();
-            }
-
-            @Override
-            public void onFailure(Call<Answer> call, Throwable t) {
-                Log.e(getClass().getName(), t.getLocalizedMessage());
-                executeActionSubject.onNext(new ShowToastAction(t.getLocalizedMessage()));
-                publishSubject.onNext(EMPTY_STR_LIST);
-                publishSubject.onComplete();
-            }
-        });
-        return publishSubject.firstElement();
+                limit)
+                .flatMap(answer -> {
+                    List<String> sgList = new ArrayList<>();
+                    sgList.add(template);
+                    for (Suggest sg : answer.result.get(0).suggest) {
+                        sgList.add(sg.value);
+                    }
+                    return Observable.just(sgList);
+                })
+                .firstElement();
     }
 
     public Single<Pair<String, List<String>>> translate(String question, String langFrom, String langTo) {
@@ -141,11 +107,11 @@ public class TranslationService {
 
         return existsActualTranslation(question, langFrom, langTo)
                 .subscribeOn(Schedulers.io())
-                .flatMap((exists) -> {
+                .flatMap(exists -> {
                     if (exists) {
-                        return getDao().getTranslations(question, langFrom, langTo, 1000)
-                                .flatMap((list) -> Maybe.just(Pair.create(question, list)))
-                                .toSingle();
+                        return getDao()
+                                .getTranslations(question, langFrom, langTo, 1000)
+                                .flatMapSingle(list -> Single.just(Pair.create(question, list)));
                     } else if (!appState.isOfflineMode) {
                         return runOnlineTranslation(question, langFrom, langTo);
                     } else {
@@ -157,7 +123,7 @@ public class TranslationService {
     private Single<Boolean> existsActualTranslation(String question, String langFrom, String langTo) {
         return getDao().getWord(question, langFrom)
                 .switchIfEmpty(Single.just(Word.NULL_WORD))
-                .flatMap((word) -> {
+                .flatMap(word -> {
                     if (word == Word.NULL_WORD || (isOldTranslation(word) && !appState.isOfflineMode)) {
                         return Single.just(EMPTY_STR_LIST);
                     } else {
@@ -165,7 +131,7 @@ public class TranslationService {
                                 .switchIfEmpty(Single.just(EMPTY_STR_LIST));
                     }
                 })
-                .flatMap((list) -> Single.just(!list.isEmpty()));
+                .flatMap(list -> Single.just(!list.isEmpty()));
     }
 
     private boolean isOldTranslation(Word word) {
@@ -178,78 +144,60 @@ public class TranslationService {
     }
 
     private Single<Pair<String, List<String>>> runOnlineTranslation(String question, String langFrom, String langTo) {
-        PublishSubject<Pair<String, List<String>>> translationPublisher = PublishSubject.create();
-        APIInterface apiInterface = retrofit.create(APIInterface.class);
-
-        Call<ResponseBody> call = apiInterface.doTranslate(
+        return retrofit.create(APIInterface.class).doTranslate(
                 langFrom,
                 langTo,
-                question);
-
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.code() != HTTP_OK) {
-                    Log.e(getClass().getName(), "Http error " + response.code());
-                    executeActionSubject.onNext(new ShowToastAction("Http error " + response.code()));
-                    return;
-                }
-                try {
-                    Document html = Jsoup.parse(response.body().string());
-
-                    String word = question;
-                    Elements elements1 = html.body().select("div.hgroup > h1");
-                    if (elements1.size() > 0) {
-                        word = elements1.get(0).text();
+                question)
+                .flatMap(response -> {
+                    Pair<String, List<String>> translation = parseResponse(question, response.string());
+                    if (translation.second.size() > 0) {
+                        storeTranslation(translation.first, langFrom, translation.second, langTo);
                     }
+                    return Observable.just(translation);
+                })
+                .firstOrError();
+    }
 
-                    Elements elements = html.body().select("div#fastMeanings");
-                    List<String> transList = EMPTY_STR_LIST;
-                    if (elements.size() > 0) {
-                        transList = extractTranslations(elements.get(0).children());
-                    }
-                    if (transList.isEmpty()) {
-                        elements = html.body().select("span.arrow");
-                        if (elements.size() > 0) {
-                            transList = new ArrayList<>();
-                            for (Element el : elements) {
-                                Node node = el.nextSibling();
-                                if (node == null) {
-                                    continue;
-                                }
-                                String text = node.toString();
-                                if (text == null) {
-                                    continue;
-                                }
-                                if (text.length() > 150) {
-                                    text = text.substring(0, 150);
-                                }
-                                transList.add(text.trim());
-                            }
+    private Pair<String, List<String>> parseResponse(String word, String responseText) {
+        try {
+            Document html = Jsoup.parse(responseText);
+
+            Elements elements1 = html.body().select("div.hgroup > h1");
+            if (elements1.size() > 0) {
+                word = elements1.get(0).text();
+            }
+
+            Elements elements = html.body().select("div#fastMeanings");
+            List<String> transList = EMPTY_STR_LIST;
+            if (elements.size() > 0) {
+                transList = extractTranslations(elements.get(0).children());
+            }
+            if (transList.isEmpty()) {
+                elements = html.body().select("span.arrow");
+                if (elements.size() > 0) {
+                    transList = new ArrayList<>();
+                    for (Element el : elements) {
+                        Node node = el.nextSibling();
+                        if (node == null) {
+                            continue;
                         }
+                        String text = node.toString();
+                        if (text == null) {
+                            continue;
+                        }
+                        if (text.length() > 150) {
+                            text = text.substring(0, 150);
+                        }
+                        transList.add(text.trim());
                     }
-                    if (transList.size() > 0) {
-                        storeTranslation(word, langFrom, transList, langTo);
-                    }
-                    translationPublisher.onNext(Pair.create(word, transList));
-                } catch (Exception e) {
-                    Log.e(getClass().getName(), e.getLocalizedMessage());
-                    executeActionSubject.onNext(new ShowToastAction(e.getLocalizedMessage()));
-                    translationPublisher.onNext(Pair.create(question, EMPTY_STR_LIST));
-                } finally {
-                    translationPublisher.onComplete();
                 }
             }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e(getClass().getName(), t.getLocalizedMessage());
-                executeActionSubject.onNext(new ShowToastAction(t.getLocalizedMessage()));
-                translationPublisher.onNext(Pair.create(question, EMPTY_STR_LIST));
-                translationPublisher.onComplete();
-            }
-        });
-        return translationPublisher.singleOrError();
+            return Pair.create(word, transList);
+        } catch (Exception e) {
+            Log.e(getClass().getName(), e.getLocalizedMessage());
+            executeActionSubject.onNext(new ShowToastAction(e.getLocalizedMessage()));
+            return Pair.create(word, EMPTY_STR_LIST);
+        }
     }
 
     private static List<String> extractTranslations(Elements translations) {
@@ -259,7 +207,7 @@ public class TranslationService {
             if (el.tag().getName().equals("br") || (el.tag().getName().equals("span") && el.hasClass("comma"))) {
                 if (word.length() > 0) {
                     if (word.length() > 0) {
-                        word.delete(word.length()-1, word.length());
+                        word.delete(word.length() - 1, word.length());
                     }
                     result.add(word.toString());
                 }

@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Vibrator;
 
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.usharik.seznamslovnik.AppState;
 import com.usharik.seznamslovnik.action.Action;
 import com.usharik.seznamslovnik.dao.DatabaseManager;
@@ -40,6 +41,7 @@ class ServiceModule {
         return new Retrofit.Builder()
                 .baseUrl("https://slovnik.seznam.cz/")
                 .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
     }
 

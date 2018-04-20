@@ -5,8 +5,10 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.databinding.Bindable;
 import android.os.Vibrator;
+import android.util.Log;
 
 import com.usharik.seznamslovnik.action.Action;
+import com.usharik.seznamslovnik.action.ShowToastAction;
 import com.usharik.seznamslovnik.adapter.TranslationListAdapter;
 import com.usharik.seznamslovnik.service.TranslationService;
 import com.usharik.seznamslovnik.framework.ViewModelObservable;
@@ -149,11 +151,16 @@ public class MainViewModel extends ViewModelObservable {
         )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(strings -> {
-                    scrollPosition = 0;
-                    adapter = new TranslationListAdapter(strings, translationService, clipboardManager, vibrator, executeActionSubject, resources, langFrom, langTo);
-                    answerPublishSubject.onNext(adapter);
-                });
+                .subscribe(
+                        strings -> {
+                            scrollPosition = 0;
+                            adapter = new TranslationListAdapter(strings, translationService, clipboardManager, vibrator, executeActionSubject, resources, langFrom, langTo);
+                            answerPublishSubject.onNext(adapter);
+                        },
+                        thr -> {
+                            Log.e(getClass().getName(), thr.getLocalizedMessage());
+                            executeActionSubject.onNext(new ShowToastAction(thr.getLocalizedMessage()));
+                        });
     }
 
     public TranslationListAdapter getAdapter() {

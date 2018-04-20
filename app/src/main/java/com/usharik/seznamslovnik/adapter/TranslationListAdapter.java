@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.os.Vibrator;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -93,11 +94,16 @@ public class TranslationListAdapter extends RecyclerView.Adapter<TranslationList
         }
         translationService.translate(suggestList.get(position), langFrom, langTo)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(pair -> {
-                    translations.put(position, pair.second);
-                    tvWord.setText(pair.first);
-                    tvTranslation.setTranslations(pair.second);
-                });
+                .subscribe(
+                        pair -> {
+                            translations.put(position, pair.second);
+                            tvWord.setText(pair.first);
+                            tvTranslation.setTranslations(pair.second);
+                        },
+                        thr -> {
+                            Log.e(getClass().getName(), thr.getLocalizedMessage());
+                            executeActionSubject.onNext(new ShowToastAction(thr.getLocalizedMessage()));
+                        });
     }
 
     @Override
