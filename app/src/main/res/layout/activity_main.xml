@@ -58,20 +58,28 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="word" />
 
+        <ImageButton
+            android:id="@+id/btSwap"
+            android:layout_width="140dp"
+            android:layout_height="34dp"
+            android:onClick="onSwapClick"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/input"
+            app:srcCompat="@drawable/ic_swap_horiz_black_24dp" />
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/my_recycler_view"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="3dp"
             android:focusable="true"
             android:padding="8dp"
             android:scrollbars="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/input"
-            app:layout_constraintVertical_bias="0.51" />
+            app:layout_constraintTop_toBottomOf="@+id/btSwap" />
 
     </android.support.constraint.ConstraintLayout>
 

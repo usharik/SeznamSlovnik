@@ -163,15 +163,13 @@ public class MainActivity extends ViewActivity<MainViewModel> {
         } else {
             fromLanguageIx++;
         }
-        binding.btFrom.setImageDrawable(getResources().getDrawable(LANG_ORDER[fromLanguageIx], null));
-        getViewModel().setFromLanguageIx(fromLanguageIx);
+        refreshFromButton();
 
         int ix = fromLanguageIx != 0 && toLanguageIx != 0 ? 0 : toLanguageIx;
         ix = fromLanguageIx == 0 && toLanguageIx == 0 ? 1 : ix;
         if (toLanguageIx != ix) {
             toLanguageIx = ix;
-            binding.btTo.setImageDrawable(getResources().getDrawable(LANG_ORDER[toLanguageIx], null));
-            getViewModel().setToLanguageIx(toLanguageIx);
+            refreshToButton();
         }
         getViewModel().refreshSuggestion();
     }
@@ -182,17 +180,34 @@ public class MainActivity extends ViewActivity<MainViewModel> {
         } else {
             toLanguageIx++;
         }
-        binding.btTo.setImageDrawable(getResources().getDrawable(LANG_ORDER[toLanguageIx], null));
-        getViewModel().setToLanguageIx(toLanguageIx);
+        refreshToButton();
 
         int ix = fromLanguageIx != 0 && toLanguageIx != 0 ? 0 : fromLanguageIx;
         ix = fromLanguageIx == 0 && toLanguageIx == 0 ? 1 : ix;
         if (fromLanguageIx != ix) {
             fromLanguageIx = ix;
-            binding.btFrom.setImageDrawable(getResources().getDrawable(LANG_ORDER[fromLanguageIx], null));
-            getViewModel().setFromLanguageIx(fromLanguageIx);
+            refreshFromButton();
         }
         getViewModel().refreshSuggestion();
+    }
+
+    public void onSwapClick(View v) {
+        int tmp = fromLanguageIx;
+        fromLanguageIx = toLanguageIx;
+        toLanguageIx = tmp;
+        refreshFromButton();
+        refreshToButton();
+        getViewModel().refreshSuggestion();
+    }
+
+    private void refreshFromButton() {
+        binding.btFrom.setImageDrawable(getResources().getDrawable(LANG_ORDER[fromLanguageIx], null));
+        getViewModel().setFromLanguageIx(fromLanguageIx);
+    }
+
+    private void refreshToButton() {
+        binding.btTo.setImageDrawable(getResources().getDrawable(LANG_ORDER[toLanguageIx], null));
+        getViewModel().setToLanguageIx(toLanguageIx);
     }
 
     public static void hideSoftKeyboard(Activity activity) {
