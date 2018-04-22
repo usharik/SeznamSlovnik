@@ -8,7 +8,7 @@ import com.usharik.seznamslovnik.action.Action;
 import com.usharik.seznamslovnik.action.ShowToastAction;
 import com.usharik.seznamslovnik.dao.DatabaseManager;
 import com.usharik.seznamslovnik.dao.TranslationStorageDao;
-import com.usharik.seznamslovnik.dao.Word;
+import com.usharik.seznamslovnik.dao.entity.Word;
 import com.usharik.seznamslovnik.model.Suggest;
 
 import org.apache.commons.lang3.StringUtils;

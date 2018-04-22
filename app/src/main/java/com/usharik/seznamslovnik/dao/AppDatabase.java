@@ -9,12 +9,16 @@ import android.arch.persistence.room.migration.Migration;
 import android.content.Context;
 import android.database.Cursor;
 
+import com.usharik.seznamslovnik.dao.entity.Translation;
+import com.usharik.seznamslovnik.dao.entity.Word;
+import com.usharik.seznamslovnik.dao.entity.WordToTranslation;
+
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Calendar;
 
 
-@Database(entities = {Word.class, Translation.class}, version = 3)
+@Database(entities = {Word.class, Translation.class, WordToTranslation.class}, version = 4)
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -25,6 +29,7 @@ public abstract class AppDatabase extends RoomDatabase {
     static AppDatabase getAppDatabase(Context context) {
         return Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, DB_NAME)
                 .addMigrations(MIGRATION_2_3)
+                .addMigrations(MIGRATION_3_4)
                 .build();
     }
 
@@ -32,15 +37,31 @@ public abstract class AppDatabase extends RoomDatabase {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
             database.execSQL("alter table WORD add column load_date INTEGER");
-            database.execSQL("update WORD set load_date = ?", new Object[] {Calendar.getInstance().getTime().getTime()});
+            database.execSQL("update WORD set load_date = ?", new Object[]{Calendar.getInstance().getTime().getTime()});
             database.execSQL("alter table WORD add column word_for_search TEXT");
 
             Cursor cursor = database.query("select id, word from WORD where word_for_search is null");
             while (cursor.moveToNext()) {
                 int id = cursor.getInt(0);
                 String word = StringUtils.stripAccents(cursor.getString(1));
-                database.execSQL("update WORD set word_for_search = ? where id =?", new Object[] {word, id});
+                database.execSQL("update WORD set word_for_search = ? where id = ?", new Object[]{word, id});
             }
+        }
+    };
+
+    static final Migration MIGRATION_3_4 = new Migration(3, 4) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("create table WORD_TO_TRANSLATION (" +
+                    "   id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "   word_id INTEGER," +
+                    "   translation_id INTEGER," +
+                    "   FOREIGN KEY(word_id) REFERENCES WORD(id) ON UPDATE NO ACTION ON DELETE NO ACTION," +
+                    "   FOREIGN KEY(translation_id) REFERENCES TRANSLATION(id) ON UPDATE NO ACTION ON DELETE NO ACTION)");
+            database.execSQL("CREATE UNIQUE INDEX index_word_id_translation_id ON WORD_TO_TRANSLATION (word_id, translation_id)");
+            database.execSQL("insert into WORD_TO_TRANSLATION(word_id, translation_id)" +
+                    "select w.wordId, w.id " +
+                    "  from TRANSLATION w");
         }
     };
 }

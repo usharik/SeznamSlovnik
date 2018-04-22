@@ -6,6 +6,10 @@ import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Transaction;
 
+import com.usharik.seznamslovnik.dao.entity.Translation;
+import com.usharik.seznamslovnik.dao.entity.Word;
+import com.usharik.seznamslovnik.dao.entity.WordToTranslation;
+
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Calendar;
@@ -29,6 +33,9 @@ public abstract class TranslationStorageDao {
     @Query("select id from WORD where word = :word and lang = :lang")
     public abstract Long getWordId(String word, String lang);
 
+    @Query("select id from TRANSLATION where translation = :translation and lang = :lang")
+    public abstract Long getTranslationId(String translation, String lang);
+
     @Query("select word " +
             " from WORD " +
             "where lang = :lang " +
@@ -45,9 +52,10 @@ public abstract class TranslationStorageDao {
 
     @Query("select A.translation " +
             " from TRANSLATION as A " +
-            "inner join WORD as B on A.wordId = B.id " +
-            "where B.word = :word " +
-            "  and B.lang = :langFrom " +
+            "inner join WORD_TO_TRANSLATION as B on A.id = B.translation_id " +
+            "inner join WORD as C on B.word_id = C.id " +
+            "where C.word = :word " +
+            "  and C.lang = :langFrom " +
             "  and A.lang = :langTo " +
             "order by A.translation " +
             "limit :limit")
@@ -55,17 +63,19 @@ public abstract class TranslationStorageDao {
 
     @Transaction
     public void insertTranslationsForWord(String request, String langFrom, List<String> translations, String langTo) {
-        Long id = getWordId(request, langFrom);
-        if (id == null) {
-            id = insertWord(new Word(request, StringUtils.stripAccents(request), langFrom));
+        Long wordId = getWordId(request, langFrom);
+        if (wordId == null) {
+            wordId = insertWord(new Word(request, StringUtils.stripAccents(request), langFrom));
         } else {
-            updateWordLoadDate(id, Calendar.getInstance().getTime());
+            updateWordLoadDate(wordId, Calendar.getInstance().getTime());
         }
-        Translation trn[] = new Translation[translations.size()];
-        for (int i = 0; i < trn.length; i++) {
-            trn[i] = new Translation(id, translations.get(i), langTo);
+        for (String translation : translations) {
+            Long translationId = getTranslationId(translation, langTo);
+            if (translationId == null) {
+                translationId = insertTranslation(new Translation(wordId, translation, langTo));
+            }
+            insertWordToTranslation(new WordToTranslation(wordId, translationId));
         }
-        insertAllTranslations(trn);
     }
 
     @Query("update WORD " +
@@ -77,5 +87,11 @@ public abstract class TranslationStorageDao {
     public abstract long insertWord(Word word);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public abstract long insertTranslation(Translation translations);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insertAllTranslations(Translation... translations);
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    public abstract void insertWordToTranslation(WordToTranslation wordToTranslation);
 }

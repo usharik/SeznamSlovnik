@@ -1,4 +1,4 @@
-package com.usharik.seznamslovnik.dao;
+package com.usharik.seznamslovnik.dao.entity;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
