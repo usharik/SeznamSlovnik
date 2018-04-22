@@ -36,16 +36,20 @@ public abstract class TranslationStorageDao {
     @Query("select id from TRANSLATION where translation = :translation and lang = :lang")
     public abstract Long getTranslationId(String translation, String lang);
 
-    @Query("select word " +
-            " from WORD " +
-            "where lang = :lang " +
-            "  and (word_for_search like :template1 || '%')" +
+    @Query("select distinct A.word " +
+            " from WORD as A " +
+            "inner join WORD_TO_TRANSLATION as B on A.id = B.word_id " +
+            "inner join TRANSLATION as C on B.translation_id = C.id " +
+            "where A.lang = :langFrom " +
+            "  and C.lang = :langTo " +
+            "  and (A.word_for_search like :template1 || '%')" +
             "order by " +
-            " case when word like :template2 || '%' then 1" +
-            "      else 2 end, " +
-            " word " +
+            " case when A.word_for_search = :template1 or A.word = :template2 then 1" +
+            "      when A.word like :template2 || '%' then 2" +
+            "      else 3 end, " +
+            " A.word " +
             "limit :limit")
-    public abstract Maybe<List<String>> getSuggestions(String template1, String template2, String lang, int limit);
+    public abstract Maybe<List<String>> getSuggestions(String template1, String template2, String langFrom, String langTo, int limit);
 
     @Query("select * from TRANSLATION")
     public abstract List<Translation> getAllTranslation();

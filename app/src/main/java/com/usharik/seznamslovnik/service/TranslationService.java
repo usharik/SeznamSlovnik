@@ -70,15 +70,15 @@ public class TranslationService {
 
     public Maybe<List<String>> getSuggestions(String template, String langFrom, String langTo, int limit, boolean isOffline) {
         if (isOffline) {
-            return getOfflineSuggestions(template, langFrom, 1000);
+            return getOfflineSuggestions(template, langFrom, langTo, 100);
         } else {
             return getOnlineSuggestions(template, langFrom, langTo, limit);
         }
     }
 
-    private Maybe<List<String>> getOfflineSuggestions(String template, String langFrom, int limit) {
+    private Maybe<List<String>> getOfflineSuggestions(String template, String langFrom, String langTo, int limit) {
         String trimmed = template.trim();
-        return getDao().getSuggestions(StringUtils.stripAccents(trimmed), trimmed, langFrom, limit);
+        return getDao().getSuggestions(StringUtils.stripAccents(trimmed), trimmed, langFrom, langTo, limit);
     }
 
     private Maybe<List<String>> getOnlineSuggestions(String template, String langFrom, String langTo, int limit) {
