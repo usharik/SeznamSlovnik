@@ -6,13 +6,19 @@ import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 
+import static android.arch.persistence.room.ForeignKey.CASCADE;
+import static android.arch.persistence.room.ForeignKey.RESTRICT;
+
 @Entity(tableName = "WORD_TO_TRANSLATION",
         foreignKeys = {
-                @ForeignKey(entity = Word.class, parentColumns = "id", childColumns = "word_id"),
-                @ForeignKey(entity = Translation.class, parentColumns = "id", childColumns = "translation_id")
+                @ForeignKey(entity = Word.class, parentColumns = "id", childColumns = "word_id",
+                        onUpdate = RESTRICT, onDelete = CASCADE),
+                @ForeignKey(entity = Translation.class, parentColumns = "id", childColumns = "translation_id",
+                        onUpdate = RESTRICT, onDelete = CASCADE)
         },
         indices = {
-                @Index(value = {"word_id", "translation_id"}, unique = true)
+                @Index(value = {"word_id", "translation_id"}, unique = true),
+                @Index(value = {"translation_id"})
         })
 public class WordToTranslation {
 

@@ -60,11 +60,12 @@
 
         <ImageButton
             android:id="@+id/btSwap"
-            android:layout_width="140dp"
+            android:layout_width="0dp"
             android:layout_height="34dp"
             android:onClick="onSwapClick"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintEnd_toEndOf="@id/input"
+            app:layout_constraintStart_toStartOf="@id/input"
             app:layout_constraintTop_toBottomOf="@id/input"
             app:srcCompat="@drawable/ic_swap_horiz_black_24dp" />
 

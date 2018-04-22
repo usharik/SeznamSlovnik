@@ -72,7 +72,7 @@ public abstract class TranslationStorageDao {
         for (String translation : translations) {
             Long translationId = getTranslationId(translation, langTo);
             if (translationId == null) {
-                translationId = insertTranslation(new Translation(wordId, translation, langTo));
+                translationId = insertTranslation(new Translation(translation, langTo));
             }
             insertWordToTranslation(new WordToTranslation(wordId, translationId));
         }

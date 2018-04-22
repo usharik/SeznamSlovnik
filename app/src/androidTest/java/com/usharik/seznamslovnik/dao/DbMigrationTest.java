@@ -41,12 +41,10 @@ public class DbMigrationTest {
         db.close();
 
         db = helper.runMigrationsAndValidate(TEST_DB, 4, true, AppDatabase.MIGRATION_3_4);
+        db.setForeignKeyConstraintsEnabled(true);
 
-        Cursor cursor = db.query("select * " +
-                "from WORD_TO_TRANSLATION a " +
-                "inner join WORD b on a.word_id = b.id " +
-                "inner join TRANSLATION c on a.translation_id = c.id");
-        Assert.assertEquals(rowCount, cursor.getCount());
+        checkDataMigration(db, rowCount);
+        checkForeignKeys(db);
     }
 
     private String buildWordInsertSql(int count) {
@@ -57,5 +55,34 @@ public class DbMigrationTest {
         }
         query.append(String.format("('word%d', 'word%d', 'cz', '123')", count, count));
         return query.toString();
+    }
+
+    private void checkDataMigration(SupportSQLiteDatabase db, int expectedRowCount) {
+        Cursor cursor = db.query("select * " +
+                "from WORD_TO_TRANSLATION a " +
+                "inner join WORD b on a.word_id = b.id " +
+                "inner join TRANSLATION c on a.translation_id = c.id");
+        Assert.assertEquals(expectedRowCount, cursor.getCount());
+        cursor.close();
+    }
+
+    private void checkForeignKeys(SupportSQLiteDatabase db) {
+        Cursor cursor = db.query("select * from WORD where word = 'word1'");
+        Assert.assertTrue(cursor.moveToNext());
+        long wordId = cursor.getLong(0);
+        cursor.close();
+
+        db.execSQL("delete from WORD where id = " + wordId);
+        cursor = db.query("select * from WORD_TO_TRANSLATION where word_id = " + wordId);
+        Assert.assertEquals(0, cursor.getCount());
+
+        cursor = db.query("select * from TRANSLATION where translation = 'word2_translation'");
+        Assert.assertTrue(cursor.moveToNext());
+        long translationId = cursor.getLong(0);
+        cursor.close();
+
+        db.execSQL("delete from TRANSLATION where id = " + translationId);
+        cursor = db.query("select * from WORD_TO_TRANSLATION where translation_id = " + translationId);
+        Assert.assertEquals(0, cursor.getCount());
     }
 }

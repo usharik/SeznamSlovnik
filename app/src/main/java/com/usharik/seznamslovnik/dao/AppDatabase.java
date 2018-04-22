@@ -56,12 +56,23 @@ public abstract class AppDatabase extends RoomDatabase {
                     "   id INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "   word_id INTEGER," +
                     "   translation_id INTEGER," +
-                    "   FOREIGN KEY(word_id) REFERENCES WORD(id) ON UPDATE NO ACTION ON DELETE NO ACTION," +
-                    "   FOREIGN KEY(translation_id) REFERENCES TRANSLATION(id) ON UPDATE NO ACTION ON DELETE NO ACTION)");
+                    "   FOREIGN KEY(word_id) REFERENCES WORD(id) ON UPDATE RESTRICT ON DELETE CASCADE," +
+                    "   FOREIGN KEY(translation_id) REFERENCES TRANSLATION(id) ON UPDATE RESTRICT ON DELETE CASCADE)");
             database.execSQL("CREATE UNIQUE INDEX index_word_id_translation_id ON WORD_TO_TRANSLATION (word_id, translation_id)");
+            database.execSQL("CREATE INDEX index_translation_id ON WORD_TO_TRANSLATION (translation_id)");
             database.execSQL("insert into WORD_TO_TRANSLATION(word_id, translation_id)" +
                     "select w.wordId, w.id " +
                     "  from TRANSLATION w");
+
+            database.execSQL("ALTER TABLE TRANSLATION RENAME TO _TRANSLATION_OLD");
+            database.execSQL("CREATE TABLE TRANSLATION (" +
+                    "`id` INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "`translation` TEXT, " +
+                    "`lang` TEXT)");
+            database.execSQL("insert into TRANSLATION(id, translation, lang) select id, translation, lang from _TRANSLATION_OLD");
+            database.execSQL("drop table _TRANSLATION_OLD");
+            database.execSQL("CREATE UNIQUE INDEX `index_TRANSLATION_translation_lang` ON `TRANSLATION` (`translation`, `lang`)");
+            database.execSQL("CREATE INDEX `index_TRANSLATION_lang` ON `TRANSLATION` (`lang`)");
         }
     };
 }
