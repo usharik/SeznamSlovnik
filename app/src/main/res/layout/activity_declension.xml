@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.usharik.seznamslovnik.DeclensionViewModel" />
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".DeclensionActivity">
+
+        <Button
+            android:id="@+id/linkToSource"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:onClick="@{(v) -> viewModel.onClick()}"
+            tools:text="http://m.prirucka.ujc.cas.cz/?slovo=slon" />
+
+        <TextView
+            android:id="@+id/wordInfo"
+            android:layout_width="0dp"
+            android:layout_height="120dp"
+            android:scrollbars="vertical"
+            app:layout_constraintTop_toBottomOf="@id/linkToSource"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:text="@{viewModel.wordInfo}"
+            tools:text="rod: m\ndeleni: slon"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/declensionList"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/wordInfo"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

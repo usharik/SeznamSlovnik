@@ -1,0 +1,168 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "ba457d10145b47172e89397b1f6385f3",
+    "entities": [
+      {
+        "tableName": "WORD",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `word` TEXT, `word_for_search` TEXT, `lang` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "word",
+            "columnName": "word",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "wordForSearch",
+            "columnName": "word_for_search",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "lang",
+            "columnName": "lang",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_WORD_word",
+            "unique": false,
+            "columnNames": [
+              "word"
+            ],
+            "createSql": "CREATE  INDEX `index_WORD_word` ON `${TABLE_NAME}` (`word`)"
+          },
+          {
+            "name": "index_WORD_lang",
+            "unique": false,
+            "columnNames": [
+              "lang"
+            ],
+            "createSql": "CREATE  INDEX `index_WORD_lang` ON `${TABLE_NAME}` (`lang`)"
+          },
+          {
+            "name": "index_WORD_word_lang",
+            "unique": true,
+            "columnNames": [
+              "word",
+              "lang"
+            ],
+            "createSql": "CREATE UNIQUE INDEX `index_WORD_word_lang` ON `${TABLE_NAME}` (`word`, `lang`)"
+          },
+          {
+            "name": "index_WORD_word_for_search_lang",
+            "unique": false,
+            "columnNames": [
+              "word_for_search",
+              "lang"
+            ],
+            "createSql": "CREATE  INDEX `index_WORD_word_for_search_lang` ON `${TABLE_NAME}` (`word_for_search`, `lang`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "TRANSLATION",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `wordId` INTEGER, `translation` TEXT, `lang` TEXT, `load_date` INTEGER, FOREIGN KEY(`wordId`) REFERENCES `WORD`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "wordId",
+            "columnName": "wordId",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "translation",
+            "columnName": "translation",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "lang",
+            "columnName": "lang",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "loadDate",
+            "columnName": "load_date",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_TRANSLATION_lang",
+            "unique": false,
+            "columnNames": [
+              "lang"
+            ],
+            "createSql": "CREATE  INDEX `index_TRANSLATION_lang` ON `${TABLE_NAME}` (`lang`)"
+          },
+          {
+            "name": "index_TRANSLATION_wordId",
+            "unique": false,
+            "columnNames": [
+              "wordId"
+            ],
+            "createSql": "CREATE  INDEX `index_TRANSLATION_wordId` ON `${TABLE_NAME}` (`wordId`)"
+          },
+          {
+            "name": "index_TRANSLATION_translation_lang",
+            "unique": true,
+            "columnNames": [
+              "translation",
+              "lang"
+            ],
+            "createSql": "CREATE UNIQUE INDEX `index_TRANSLATION_translation_lang` ON `${TABLE_NAME}` (`translation`, `lang`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "WORD",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "wordId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"ba457d10145b47172e89397b1f6385f3\")"
+    ]
+  }
+}

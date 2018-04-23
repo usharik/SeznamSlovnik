@@ -9,11 +9,14 @@ import android.os.Vibrator;
 
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.usharik.seznamslovnik.AppState;
+import com.usharik.seznamslovnik.UrlRepository;
 import com.usharik.seznamslovnik.action.Action;
 import com.usharik.seznamslovnik.dao.DatabaseManager;
 import com.usharik.seznamslovnik.service.TranslationService;
 import com.usharik.seznamslovnik.service.NetworkService;
+import com.usharik.seznamslovnik.service.WordInfoService;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -21,6 +24,7 @@ import dagger.Provides;
 import io.reactivex.subjects.PublishSubject;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 
 /**
  * Created by macbook on 09.02.18.
@@ -37,9 +41,31 @@ class ServiceModule {
 
     @Provides
     @Singleton
-    Retrofit provideRetrofit() {
+    @Named("seznamRetrofit")
+    Retrofit provideSeznamRetrofit() {
         return new Retrofit.Builder()
-                .baseUrl("https://slovnik.seznam.cz/")
+                .baseUrl(UrlRepository.SEZNAM_TRANSLATE)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .build();
+    }
+
+    @Provides
+    @Singleton
+    @Named("seznamSuggestRetrofit")
+    Retrofit provideSeznamSuggestRetrofit() {
+        return new Retrofit.Builder()
+                .baseUrl(UrlRepository.SEZNAM_SUGGEST)
+                .addConverterFactory(SimpleXmlConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .build();
+    }
+
+    @Provides
+    @Singleton
+    @Named("languageServiceRetrofit")
+    Retrofit provideLanguageServiceRetrofit() {
+        return new Retrofit.Builder()
+                .baseUrl((UrlRepository.NLP_LANGUAGE_SERVICES))
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
@@ -54,10 +80,17 @@ class ServiceModule {
     @Provides
     @Singleton
     TranslationService provideTranslationService(DatabaseManager databaseManager,
-                                             AppState appState,
-                                             Retrofit retrofit,
-                                             PublishSubject<Action> executeActionSubject) {
-        return new TranslationService(databaseManager, appState, retrofit, executeActionSubject);
+                                                 AppState appState,
+                                                 @Named("seznamRetrofit") Retrofit seznamRetrofit,
+                                                 @Named("seznamSuggestRetrofit") Retrofit seznamSuggestionRetrofit,
+                                                 PublishSubject<Action> executeActionSubject) {
+        return new TranslationService(databaseManager, appState, seznamRetrofit, seznamSuggestionRetrofit, executeActionSubject);
+    }
+
+    @Provides
+    @Singleton
+    WordInfoService provideWordInfoService() {
+        return new WordInfoService();
     }
 
     @Provides
@@ -92,7 +125,7 @@ class ServiceModule {
 
     @Provides
     @Singleton
-    SharedPreferences provideSharedPrefences(Application application) {
+    SharedPreferences provideSharedPreferences(Application application) {
         return application.getSharedPreferences("seznam_slovnik.prefences", Context.MODE_PRIVATE);
     }
 }

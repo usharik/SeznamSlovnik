@@ -5,6 +5,14 @@
         android:title="@string/open_in_browser" />
 
     <item
+        android:id="@+id/additionalInfo"
+        android:title="@string/additionalInfo" />
+
+    <item
+        android:id="@+id/dictCom"
+        android:title="@string/dictCom" />
+
+    <item
         android:id="@+id/copyAllToClipboard"
         android:title="@string/copy_all_to_clipboard"
         android:visible="false" />

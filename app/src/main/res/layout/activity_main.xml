@@ -16,6 +16,17 @@
         android:layout_height="match_parent"
         tools:context="com.usharik.seznamslovnik.MainActivity">
 
+        <ToggleButton
+            android:id="@+id/onLine"
+            android:layout_width="0dp"
+            android:layout_height="34dp"
+            android:textOn="@string/online"
+            android:textOff="@string/offline"
+            android:textSize="12sp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="@id/input"
+            app:layout_constraintEnd_toEndOf="@id/input" />
+
         <ImageButton
             android:id="@+id/btFrom"
             android:layout_width="wrap_content"
@@ -24,9 +35,8 @@
             android:layout_marginStart="8dp"
             android:onClick="onFromClick"
             app:layout_constraintEnd_toStartOf="@+id/input"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/onLine"
             app:srcCompat="@drawable/cz" />
 
         <ImageButton
@@ -39,7 +49,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/input"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/onLine"
             app:srcCompat="@drawable/ru" />
 
         <EditText
@@ -55,7 +65,7 @@
             app:layout_constraintEnd_toStartOf="@+id/btTo"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/btFrom"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/onLine"
             tools:text="word" />
 
         <ImageButton

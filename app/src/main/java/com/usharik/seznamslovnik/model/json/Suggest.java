@@ -1,4 +1,4 @@
-package com.usharik.seznamslovnik.model;
+package com.usharik.seznamslovnik.model.json;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

@@ -11,6 +11,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.CompoundButton;
 
 import com.usharik.seznamslovnik.action.Action;
 import com.usharik.seznamslovnik.action.BackupDictionaryAction;
@@ -61,7 +62,8 @@ public class MainActivity extends ViewActivity<MainViewModel> {
             hideSoftKeyboard(this);
             return view.performClick();
         });
-        updateTitle();
+        binding.onLine.setChecked(!getViewModel().isOfflineMode());
+        binding.onLine.setOnCheckedChangeListener(this::onCheckedChanged);
 
         compositeDisposable.add(getViewModel().getAnswerPublishSubject().subscribe(adapter -> binding.myRecyclerView.setAdapter(adapter)));
     }
@@ -78,22 +80,12 @@ public class MainActivity extends ViewActivity<MainViewModel> {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.options, menu);
-        MenuItem item = menu.findItem(R.id.offlineMode);
-        item.setChecked(getViewModel().isOfflineMode());
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         switch(item.getItemId()) {
-            case R.id.offlineMode:
-                item.setChecked(!getViewModel().isOfflineMode());
-                getViewModel().setOfflineMode(item.isChecked());
-                updateTitle();
-                if (!getViewModel().isOfflineMode()) {
-                    getViewModel().onTextChanged(binding.input.getText(), 0, 0, 0);
-                }
-                return true;
             case R.id.backup:
                 if (isExternalStoragePermitted()) {
                     executeActionSubject.onNext(new BackupDictionaryAction());
@@ -198,6 +190,11 @@ public class MainActivity extends ViewActivity<MainViewModel> {
         refreshFromButton();
         refreshToButton();
         getViewModel().refreshSuggestion();
+    }
+
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        getViewModel().setOfflineMode(!isChecked);
+        updateTitle();
     }
 
     private void refreshFromButton() {

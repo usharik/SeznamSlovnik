@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import com.usharik.seznamslovnik.action.Action;
 import com.usharik.seznamslovnik.action.BackupDictionaryAction;
+import com.usharik.seznamslovnik.action.DeclensionAction;
 import com.usharik.seznamslovnik.action.OpenUrlInBrowserAction;
 import com.usharik.seznamslovnik.action.RestoreDictionaryAction;
 import com.usharik.seznamslovnik.action.ShowToastAction;
@@ -40,6 +41,9 @@ public class App extends Application implements HasActivityInjector {
 
     @Inject
     DatabaseManager databaseManager;
+
+    @Inject
+    AppState appState;
 
     @Override
     public void onCreate() {
@@ -84,6 +88,13 @@ public class App extends Application implements HasActivityInjector {
                 }
                 return Observable.just(message);
             }
+
+            case DeclensionAction.DECLENSION_ACTION_ACTION:
+                appState.word = ((DeclensionAction) action).getWord();
+                Intent intent = new Intent(this, DeclensionActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                return Observable.empty();
 
             default:
                 return Observable.empty();

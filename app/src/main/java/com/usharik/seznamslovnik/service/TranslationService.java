@@ -9,7 +9,7 @@ import com.usharik.seznamslovnik.action.ShowToastAction;
 import com.usharik.seznamslovnik.dao.DatabaseManager;
 import com.usharik.seznamslovnik.dao.TranslationStorageDao;
 import com.usharik.seznamslovnik.dao.entity.Word;
-import com.usharik.seznamslovnik.model.Suggest;
+import com.usharik.seznamslovnik.model.xml.Result;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
@@ -43,16 +43,19 @@ public class TranslationService {
     private final PublishSubject<Wrapper> storeSubject = PublishSubject.create();
     private final DatabaseManager databaseManager;
     private final AppState appState;
-    private final Retrofit retrofit;
+    private final Retrofit seznamRetrofit;
+    private final Retrofit seznamSuggestRetrofit;
     private final PublishSubject<Action> executeActionSubject;
 
     public TranslationService(final DatabaseManager databaseManager,
                               final AppState appState,
-                              final Retrofit retrofit,
+                              final Retrofit seznamRetrofit,
+                              final Retrofit seznamSuggestRetrofit,
                               final PublishSubject<Action> executeActionSubject) {
         this.databaseManager = databaseManager;
         this.appState = appState;
-        this.retrofit = retrofit;
+        this.seznamRetrofit = seznamRetrofit;
+        this.seznamSuggestRetrofit = seznamSuggestRetrofit;
         this.executeActionSubject = executeActionSubject;
         storeSubject.observeOn(Schedulers.io())
                 .subscribe(wrp -> {
@@ -82,18 +85,18 @@ public class TranslationService {
     }
 
     private Maybe<List<String>> getOnlineSuggestions(String template, String langFrom, String langTo, int limit) {
-        return retrofit.create(APIInterface.class).doGetSuggestions(
+        return seznamSuggestRetrofit.create(SeznamSuggestionInterface.class).doGetSuggestions(
                 langFrom,
                 langTo,
                 template,
-                "json",
+                "xml",
                 1,
                 limit)
                 .flatMap(answer -> {
                     List<String> sgList = new ArrayList<>();
                     sgList.add(template);
-                    for (Suggest sg : answer.result.get(0).suggest) {
-                        sgList.add(sg.value);
+                    for (Result.Item item : answer.suggest) {
+                        sgList.add(item.value);
                     }
                     return Observable.just(sgList);
                 })
@@ -144,7 +147,7 @@ public class TranslationService {
     }
 
     private Single<Pair<String, List<String>>> runOnlineTranslation(String question, String langFrom, String langTo) {
-        return retrofit.create(APIInterface.class).doTranslate(
+        return seznamRetrofit.create(SeznamRestInterface.class).doTranslate(
                 langFrom,
                 langTo,
                 question)

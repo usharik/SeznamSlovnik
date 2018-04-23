@@ -6,8 +6,10 @@ import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Transaction;
 
+import com.usharik.seznamslovnik.dao.entity.CasesOfNoun;
 import com.usharik.seznamslovnik.dao.entity.Translation;
 import com.usharik.seznamslovnik.dao.entity.Word;
+import com.usharik.seznamslovnik.dao.entity.WordInfo;
 import com.usharik.seznamslovnik.dao.entity.WordToTranslation;
 
 import org.apache.commons.lang3.StringUtils;
@@ -65,6 +67,27 @@ public abstract class TranslationStorageDao {
             "limit :limit")
     public abstract Maybe<List<String>> getTranslations(String word, String langFrom, String langTo, int limit);
 
+    @Query("select A.word " +
+            " from CASES_OF_NOUN as A " +
+            "inner join WORD as B on A.word_id = B.id " +
+            "where B.word = :word " +
+            "  and A.case_num = :caseNum " +
+            "  and A.number = :number")
+    public abstract String getCaseOfNoun(String word, Integer caseNum, String number);
+
+    @Query("select A.* " +
+            " from CASES_OF_NOUN as A " +
+            "inner join WORD as B on A.word_id = B.id " +
+            "where B.word = :word " +
+            "  and A.number = :number")
+    public abstract List<CasesOfNoun> getCasesOfNoun(String word, String number);
+
+    @Query("select A.info " +
+            " from WORD_INFO as A " +
+            "inner join WORD as B on A.word_id = B.id " +
+            "where B.word = :word ")
+    public abstract List<String> getWordInfo(String word);
+
     @Transaction
     public void insertTranslationsForWord(String request, String langFrom, List<String> translations, String langTo) {
         Long wordId = getWordId(request, langFrom);
@@ -98,4 +121,13 @@ public abstract class TranslationStorageDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     public abstract void insertWordToTranslation(WordToTranslation wordToTranslation);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public abstract void insertCaseOfNoun(CasesOfNoun casesOfNoun);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public abstract void insertCasesOfNoun(CasesOfNoun... casesOfNoun);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public abstract void insertWordInfos(WordInfo... wordInfos);
 }

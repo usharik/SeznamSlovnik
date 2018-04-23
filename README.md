@@ -1,5 +1,6 @@
 # Seznam Slovnik
 Android Application for online dictionary https://slovnik.seznam.cz
+Also application use http://m.prirucka.ujc.cas.cz to get all forms of nouns.
 
 Minimal Android version Lollipop 5.0 (API 21)
 

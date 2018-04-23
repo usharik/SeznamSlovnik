@@ -3,6 +3,7 @@ package com.usharik.seznamslovnik.di;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 
+import com.usharik.seznamslovnik.DeclensionViewModel;
 import com.usharik.seznamslovnik.MainViewModel;
 
 import dagger.Binds;
@@ -19,6 +20,11 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(MainViewModel.class)
     abstract ViewModel bindMainViewModel(MainViewModel userViewModel);
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DeclensionViewModel.class)
+    abstract ViewModel bindDeclensionViewModel(DeclensionViewModel userViewModel);
 
     @Binds
     abstract ViewModelProvider.Factory bindViewModelFactory(AppViewModelFactory factory);

@@ -1,0 +1,290 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 5,
+    "identityHash": "5cb90bc64004d006b7485d2ee96a6ed8",
+    "entities": [
+      {
+        "tableName": "WORD",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `word` TEXT, `word_for_search` TEXT, `lang` TEXT, `load_date` INTEGER)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "word",
+            "columnName": "word",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "wordForSearch",
+            "columnName": "word_for_search",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "lang",
+            "columnName": "lang",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "loadDate",
+            "columnName": "load_date",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_WORD_word",
+            "unique": false,
+            "columnNames": [
+              "word"
+            ],
+            "createSql": "CREATE  INDEX `index_WORD_word` ON `${TABLE_NAME}` (`word`)"
+          },
+          {
+            "name": "index_WORD_lang",
+            "unique": false,
+            "columnNames": [
+              "lang"
+            ],
+            "createSql": "CREATE  INDEX `index_WORD_lang` ON `${TABLE_NAME}` (`lang`)"
+          },
+          {
+            "name": "index_WORD_word_lang",
+            "unique": true,
+            "columnNames": [
+              "word",
+              "lang"
+            ],
+            "createSql": "CREATE UNIQUE INDEX `index_WORD_word_lang` ON `${TABLE_NAME}` (`word`, `lang`)"
+          },
+          {
+            "name": "index_WORD_word_for_search_lang",
+            "unique": false,
+            "columnNames": [
+              "word_for_search",
+              "lang"
+            ],
+            "createSql": "CREATE  INDEX `index_WORD_word_for_search_lang` ON `${TABLE_NAME}` (`word_for_search`, `lang`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "TRANSLATION",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `translation` TEXT, `lang` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "translation",
+            "columnName": "translation",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "lang",
+            "columnName": "lang",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_TRANSLATION_lang",
+            "unique": false,
+            "columnNames": [
+              "lang"
+            ],
+            "createSql": "CREATE  INDEX `index_TRANSLATION_lang` ON `${TABLE_NAME}` (`lang`)"
+          },
+          {
+            "name": "index_TRANSLATION_translation_lang",
+            "unique": true,
+            "columnNames": [
+              "translation",
+              "lang"
+            ],
+            "createSql": "CREATE UNIQUE INDEX `index_TRANSLATION_translation_lang` ON `${TABLE_NAME}` (`translation`, `lang`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "WORD_TO_TRANSLATION",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `word_id` INTEGER, `translation_id` INTEGER, FOREIGN KEY(`word_id`) REFERENCES `WORD`(`id`) ON UPDATE RESTRICT ON DELETE CASCADE , FOREIGN KEY(`translation_id`) REFERENCES `TRANSLATION`(`id`) ON UPDATE RESTRICT ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "wordId",
+            "columnName": "word_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "translationId",
+            "columnName": "translation_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_WORD_TO_TRANSLATION_word_id_translation_id",
+            "unique": true,
+            "columnNames": [
+              "word_id",
+              "translation_id"
+            ],
+            "createSql": "CREATE UNIQUE INDEX `index_WORD_TO_TRANSLATION_word_id_translation_id` ON `${TABLE_NAME}` (`word_id`, `translation_id`)"
+          },
+          {
+            "name": "index_WORD_TO_TRANSLATION_translation_id",
+            "unique": false,
+            "columnNames": [
+              "translation_id"
+            ],
+            "createSql": "CREATE  INDEX `index_WORD_TO_TRANSLATION_translation_id` ON `${TABLE_NAME}` (`translation_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "WORD",
+            "onDelete": "CASCADE",
+            "onUpdate": "RESTRICT",
+            "columns": [
+              "word_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "TRANSLATION",
+            "onDelete": "CASCADE",
+            "onUpdate": "RESTRICT",
+            "columns": [
+              "translation_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "CASES_OF_NOUN",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `word_id` INTEGER, `case_num` INTEGER, `number` TEXT, `word` TEXT, FOREIGN KEY(`word_id`) REFERENCES `WORD`(`id`) ON UPDATE RESTRICT ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "wordId",
+            "columnName": "word_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "caseNum",
+            "columnName": "case_num",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "number",
+            "columnName": "number",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "word",
+            "columnName": "word",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_CASES_OF_NOUN_word_id",
+            "unique": false,
+            "columnNames": [
+              "word_id"
+            ],
+            "createSql": "CREATE  INDEX `index_CASES_OF_NOUN_word_id` ON `${TABLE_NAME}` (`word_id`)"
+          },
+          {
+            "name": "index_CASES_OF_NOUN_word_id_case_num_number",
+            "unique": true,
+            "columnNames": [
+              "word_id",
+              "case_num",
+              "number"
+            ],
+            "createSql": "CREATE UNIQUE INDEX `index_CASES_OF_NOUN_word_id_case_num_number` ON `${TABLE_NAME}` (`word_id`, `case_num`, `number`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "WORD",
+            "onDelete": "CASCADE",
+            "onUpdate": "RESTRICT",
+            "columns": [
+              "word_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"5cb90bc64004d006b7485d2ee96a6ed8\")"
+    ]
+  }
+}
