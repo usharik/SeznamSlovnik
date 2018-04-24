@@ -83,8 +83,7 @@ public class TranslationListAdapter extends RecyclerView.Adapter<TranslationList
         holder.view.setTag(position);
         TextView tvWord = holder.view.findViewById(R.id.word);
         TranslationTextView tvTranslation = holder.view.findViewById(R.id.translations);
-        String word = suggestList.get(position);
-        tvWord.setText(word);
+        tvWord.setText(suggestList.get(position));
         TextView optionsMenuButton = holder.view.findViewById(R.id.optionsMenuButton);
         optionsMenuButton.setOnClickListener(this::onOptionsMenuClick);
 
@@ -97,6 +96,7 @@ public class TranslationListAdapter extends RecyclerView.Adapter<TranslationList
                 .subscribe(
                         pair -> {
                             translations.put(position, pair.second);
+                            suggestList.set(position, pair.first);
                             tvWord.setText(pair.first);
                             tvTranslation.setTranslations(pair.second);
                         },
