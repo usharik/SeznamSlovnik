@@ -10,6 +10,7 @@ import android.content.Context;
 import android.database.Cursor;
 
 import com.usharik.seznamslovnik.dao.entity.CasesOfNoun;
+import com.usharik.seznamslovnik.dao.entity.FormsOfVerb;
 import com.usharik.seznamslovnik.dao.entity.Translation;
 import com.usharik.seznamslovnik.dao.entity.Word;
 import com.usharik.seznamslovnik.dao.entity.WordInfo;
@@ -26,9 +27,10 @@ import java.util.Calendar;
                 Translation.class,
                 WordToTranslation.class,
                 CasesOfNoun.class,
+                FormsOfVerb.class,
                 WordInfo.class
         },
-        version = 6
+        version = 7
 )
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
@@ -43,6 +45,7 @@ public abstract class AppDatabase extends RoomDatabase {
                 .addMigrations(MIGRATION_3_4)
                 .addMigrations(MIGRATION_4_5)
                 .addMigrations(MIGRATION_5_6)
+                .addMigrations(MIGRATION_6_7)
                 .build();
     }
 
@@ -113,6 +116,21 @@ public abstract class AppDatabase extends RoomDatabase {
                     "`info` TEXT, " +
                     "FOREIGN KEY(`word_id`) REFERENCES `WORD`(`id`) ON UPDATE RESTRICT ON DELETE CASCADE )");
             database.execSQL("CREATE  INDEX `index_WORD_INFO_word_id` ON `WORD_INFO` (`word_id`)");
+        }
+    };
+
+    static final Migration MIGRATION_6_7 = new Migration(6, 7) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE IF NOT EXISTS `FORMS_OF_VERB` (" +
+                    "`id` INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "`word_id` INTEGER, " +
+                    "`form_num` INTEGER, " +
+                    "`number` TEXT, " +
+                    "`word` TEXT, " +
+                    "FOREIGN KEY(`word_id`) REFERENCES `WORD`(`id`) ON UPDATE RESTRICT ON DELETE CASCADE )");
+            database.execSQL("CREATE INDEX `index_FORMS_OF_VERB_word_id` ON `FORMS_OF_VERB` (`word_id`)");
+            database.execSQL("CREATE UNIQUE INDEX `index_FORMS_OF_VERB_word_id_form_num_number` ON `FORMS_OF_VERB` (`word_id`, `form_num`, `number`)");
         }
     };
 }

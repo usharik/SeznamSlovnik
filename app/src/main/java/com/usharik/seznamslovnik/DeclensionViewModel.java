@@ -1,19 +1,23 @@
 package com.usharik.seznamslovnik;
 
 import android.databinding.Bindable;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
 import com.usharik.seznamslovnik.action.Action;
 import com.usharik.seznamslovnik.action.OpenUrlInBrowserAction;
 import com.usharik.seznamslovnik.adapter.DeclensionAdapter;
+import com.usharik.seznamslovnik.adapter.FormsOfVerbAdapter;
 import com.usharik.seznamslovnik.dao.DatabaseManager;
 import com.usharik.seznamslovnik.dao.TranslationStorageDao;
 import com.usharik.seznamslovnik.dao.entity.CasesOfNoun;
+import com.usharik.seznamslovnik.dao.entity.FormsOfVerb;
 import com.usharik.seznamslovnik.dao.entity.WordInfo;
 import com.usharik.seznamslovnik.framework.ViewModelObservable;
 import com.usharik.seznamslovnik.service.WordInfoService;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -42,43 +46,58 @@ public class DeclensionViewModel extends ViewModelObservable {
         this.wordInfo = new ArrayList<>();
     }
 
-    public Observable<DeclensionAdapter> getAdapter() {
-        return Observable.fromCallable(() -> prepareNounAdapter(appState.word));
+    public Observable< RecyclerView.Adapter> getAdapter() {
+        return Observable.fromCallable(() -> prepareWordFormsAdapter(appState.word));
     }
 
-    private DeclensionAdapter prepareNounAdapter(String word) {
+    private RecyclerView.Adapter prepareWordFormsAdapter(String word) {
         TranslationStorageDao dao = databaseManager.getActiveDbInstance().translationStorageDao();
-        HashMap<Integer, String> singularDeclensions = new HashMap<>();
-        HashMap<Integer, String> pluralDeclensions = new HashMap<>();
+        HashMap<Integer, String> singularForms = new HashMap<>();
+        HashMap<Integer, String> pluralForms = new HashMap<>();
+        RecyclerView.Adapter adapter = new DeclensionAdapter(Collections.emptyMap(), Collections.emptyMap());
         try {
-            List<CasesOfNoun> single = dao.getCasesOfNoun(word, "nS");
-
-            for (CasesOfNoun con : single) {
-                singularDeclensions.put(con.getCaseNum(), con.getWord());
-            }
-            List<CasesOfNoun> plural = dao.getCasesOfNoun(word, "nP");
-            for (CasesOfNoun con : plural) {
-                pluralDeclensions.put(con.getCaseNum(), con.getWord());
-            }
             this.wordInfo.clear();
             this.wordInfo.addAll(dao.getWordInfo(word));
 
-            if ((single.size() == 7 && plural.size() == 7 && wordInfo.size() > 0) || appState.isOfflineMode) {
-                notifyPropertyChanged(BR.wordInfo);
-                return new DeclensionAdapter(singularDeclensions, pluralDeclensions);
+            List<CasesOfNoun> singleNoun = dao.getCasesOfNoun(word, "nS");
+            for (CasesOfNoun con : singleNoun) {
+                singularForms.put(con.getCaseNum(), con.getWord());
             }
+
+            List<CasesOfNoun> pluralNoun = dao.getCasesOfNoun(word, "nP");
+            for (CasesOfNoun con : pluralNoun) {
+                pluralForms.put(con.getCaseNum(), con.getWord());
+            }
+
+            if (singleNoun.size() == 7 || pluralNoun.size() == 7) {
+                return new DeclensionAdapter(singularForms, pluralForms);
+            }
+
+            singularForms.clear();
+            pluralForms.clear();
+
+            List<FormsOfVerb> singleVerb = dao.getFormsOfVerb(word, "nS");
+            for (FormsOfVerb con : singleVerb) {
+                singularForms.put(con.getFormNum(), con.getWord());
+            }
+
+            List<FormsOfVerb> pluralVerb = dao.getFormsOfVerb(word, "nP");
+            for (FormsOfVerb con : pluralVerb) {
+                pluralForms.put(con.getFormNum(), con.getWord());
+            }
+
+            if (singleVerb.size() == pluralVerb.size() && singleVerb.size() >= 9) {
+                return new FormsOfVerbAdapter(singularForms, pluralForms);
+            }
+
+            if (appState.isOfflineMode) {
+                return new DeclensionAdapter(Collections.emptyMap(), Collections.emptyMap());
+            }
+
             WordInfoService.ParsedWordInfo wordInfo = wordInfoService.getWordInfoFromPriruckaUjcCas(word);
-            if (wordInfoService.isNounWordInfo(wordInfo)) {
-                Long wordId = dao.getWordId(word, "cz");
-                List<CasesOfNoun> casesOfNoun = wordInfoService.parseCasesOfNoun(wordId, wordInfo);
-                dao.insertCasesOfNoun(casesOfNoun.toArray(new CasesOfNoun[casesOfNoun.size()]));
-                for (CasesOfNoun con : casesOfNoun) {
-                    if (con.getNumber().equals("nS")) {
-                        singularDeclensions.put(con.getCaseNum(), con.getWord());
-                    } else {
-                        pluralDeclensions.put(con.getCaseNum(), con.getWord());
-                    }
-                }
+
+            Long wordId = dao.getWordId(word, "cz");
+            if (this.wordInfo.size() == 0) {
                 List<WordInfo> wordInfos = wordInfoService.parsePolozky(wordId, wordInfo);
                 dao.insertWordInfos(wordInfos.toArray(new WordInfo[wordInfos.size()]));
                 this.wordInfo.clear();
@@ -86,11 +105,38 @@ public class DeclensionViewModel extends ViewModelObservable {
                     this.wordInfo.add(wi.getInfo());
                 }
             }
+
+            if (wordInfoService.isNounWordInfo(wordInfo)) {
+                List<CasesOfNoun> casesOfNoun = wordInfoService.parseCasesOfNoun(wordId, wordInfo);
+                dao.insertCasesOfNoun(casesOfNoun.toArray(new CasesOfNoun[casesOfNoun.size()]));
+                for (CasesOfNoun con : casesOfNoun) {
+                    if (con.getNumber().equals("nS")) {
+                        singularForms.put(con.getCaseNum(), con.getWord());
+                    } else {
+                        pluralForms.put(con.getCaseNum(), con.getWord());
+                    }
+                }
+                adapter = new DeclensionAdapter(singularForms, pluralForms);
+            } else if (wordInfoService.isVerbWordInfo(wordInfo)) {
+                List<FormsOfVerb> formsOfVerbs = wordInfoService.parseFormsOfVerb(wordId, wordInfo);
+                dao.insertFormsOfVerb(formsOfVerbs.toArray(new FormsOfVerb[formsOfVerbs.size()]));
+                for (FormsOfVerb fov : formsOfVerbs) {
+                    if (fov.getNumber().equals("nS")) {
+                        singularForms.put(fov.getFormNum(), fov.getWord());
+                    } else {
+                        pluralForms.put(fov.getFormNum(), fov.getWord());
+                    }
+                }
+                adapter = new FormsOfVerbAdapter(singularForms, pluralForms);
+            } else if (this.wordInfo.size() == 0) {
+                adapter = new DeclensionAdapter(Collections.emptyMap(), Collections.emptyMap());
+            }
         } catch (Exception ex) {
             Log.e(getClass().getName(), "!!!!!", ex);
+        } finally {
+            notifyPropertyChanged(BR.wordInfo);
         }
-        notifyPropertyChanged(BR.wordInfo);
-        return new DeclensionAdapter(singularDeclensions, pluralDeclensions);
+        return adapter;
     }
 
     @Bindable

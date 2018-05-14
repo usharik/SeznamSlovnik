@@ -7,6 +7,7 @@ import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Transaction;
 
 import com.usharik.seznamslovnik.dao.entity.CasesOfNoun;
+import com.usharik.seznamslovnik.dao.entity.FormsOfVerb;
 import com.usharik.seznamslovnik.dao.entity.Translation;
 import com.usharik.seznamslovnik.dao.entity.Word;
 import com.usharik.seznamslovnik.dao.entity.WordInfo;
@@ -82,6 +83,13 @@ public abstract class TranslationStorageDao {
             "  and A.number = :number")
     public abstract List<CasesOfNoun> getCasesOfNoun(String word, String number);
 
+    @Query("select A.* " +
+            " from FORMS_OF_VERB as A " +
+            "inner join WORD as B on A.word_id = B.id " +
+            "where B.word = :word " +
+            "  and A.number = :number")
+    public abstract List<FormsOfVerb> getFormsOfVerb(String word, String number);
+
     @Query("select A.info " +
             " from WORD_INFO as A " +
             "inner join WORD as B on A.word_id = B.id " +
@@ -127,6 +135,9 @@ public abstract class TranslationStorageDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insertCasesOfNoun(CasesOfNoun... casesOfNoun);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public abstract void insertFormsOfVerb(FormsOfVerb... formsOfVerbs);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insertWordInfos(WordInfo... wordInfos);

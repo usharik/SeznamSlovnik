@@ -1,7 +1,7 @@
 package com.usharik.seznamslovnik.service;
 
-
 import com.usharik.seznamslovnik.dao.entity.CasesOfNoun;
+import com.usharik.seznamslovnik.dao.entity.FormsOfVerb;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -23,6 +23,18 @@ public class WordInfoServiceTest {
             List<CasesOfNoun> casesOfNouns = wordInfoService.parseCasesOfNoun(11, wordInfo);
             Assert.assertNotNull(casesOfNouns);
             Assert.assertEquals(14, casesOfNouns.size());
+        }
+    }
+
+    @Test
+    public void wordInfoServiceVerbTest() throws Exception {
+        for (String word : new String[] {"být", "delat"}) {
+            Thread.sleep(300);
+            WordInfoService wordInfoService = new WordInfoService();
+            WordInfoService.ParsedWordInfo wordInfo = wordInfoService.getWordInfoFromPriruckaUjcCas(word);
+            Assert.assertTrue(wordInfoService.isVerbWordInfo(wordInfo));
+            List<FormsOfVerb> formsOfVerbs = wordInfoService.parseFormsOfVerb(11, wordInfo);
+            Assert.assertNotNull(formsOfVerbs);
         }
     }
 

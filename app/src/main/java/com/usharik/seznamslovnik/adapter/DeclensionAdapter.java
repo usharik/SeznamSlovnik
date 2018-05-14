@@ -70,8 +70,8 @@ public class DeclensionAdapter extends RecyclerView.Adapter<DeclensionAdapter.Vi
         setText(holder.view, R.id.caseName, cases[position].name);
         setText(holder.view, R.id.caseHint, cases[position].hint);
         setText(holder.view, R.id.caseQuestion, cases[position].questions);
-        setText(holder.view, R.id.singular, singularDeclensions.get(position+1));
-        setText(holder.view, R.id.plural, pluralDeclensions.get(position+1));
+        setText(holder.view, R.id.caseSingular, singularDeclensions.get(position+1));
+        setText(holder.view, R.id.casePlural, pluralDeclensions.get(position+1));
     }
 
     private void setText(View parent, int id, String text) {

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:layout_editor_absoluteY="81dp">
+
+    <TextView
+        android:id="@+id/formNum"
+        android:layout_width="20dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rect"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@id/formName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="1" />
+
+    <TextView
+        android:id="@+id/formName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rect"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/formNum"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="1. osoba" />
+
+    <TextView
+        android:id="@+id/caseSingular"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rect"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toStartOf="@+id/formPlural"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/formNum"
+        tools:text="Singular" />
+
+    <TextView
+        android:id="@+id/formPlural"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rect"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/caseSingular"
+        app:layout_constraintTop_toBottomOf="@id/formNum"
+        tools:text="Plural" />
+
+</android.support.constraint.ConstraintLayout>

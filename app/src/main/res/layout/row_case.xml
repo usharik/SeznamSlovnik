@@ -36,7 +36,7 @@
         android:textStyle="bold"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toEndOf="@id/caseName"
-        app:layout_constraintEnd_toEndOf="@id/singular"
+        app:layout_constraintEnd_toEndOf="@id/caseSingular"
         android:background="@drawable/rect"
         tools:text="bez" />
 
@@ -46,29 +46,29 @@
         android:layout_height="wrap_content"
         android:textStyle="bold"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="@id/plural"
+        app:layout_constraintStart_toStartOf="@id/casePlural"
         app:layout_constraintEnd_toEndOf="parent"
         android:background="@drawable/rect"
         tools:text="koho? čeho?" />
 
     <TextView
-        android:id="@+id/singular"
+        android:id="@+id/caseSingular"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textAlignment="center"
         app:layout_constraintTop_toBottomOf="@id/caseNum"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/plural"
+        app:layout_constraintEnd_toStartOf="@id/casePlural"
         android:background="@drawable/rect"
         tools:text="Singular" />
 
     <TextView
-        android:id="@+id/plural"
+        android:id="@+id/casePlural"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textAlignment="center"
         app:layout_constraintTop_toBottomOf="@id/caseNum"
-        app:layout_constraintStart_toEndOf="@id/singular"
+        app:layout_constraintStart_toEndOf="@id/caseSingular"
         app:layout_constraintEnd_toEndOf="parent"
         android:background="@drawable/rect"
         tools:text="Plural" />

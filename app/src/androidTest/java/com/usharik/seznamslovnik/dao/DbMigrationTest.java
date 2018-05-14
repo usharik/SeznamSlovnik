@@ -103,4 +103,13 @@ public class DbMigrationTest {
 
         db = helper.runMigrationsAndValidate(TEST_DB, 6, true, AppDatabase.MIGRATION_5_6);
     }
+
+    @Test
+    public void migrate6To7() throws IOException {
+        SupportSQLiteDatabase db = helper.createDatabase(TEST_DB, 6);
+
+        db.close();
+
+        db = helper.runMigrationsAndValidate(TEST_DB, 7, true, AppDatabase.MIGRATION_6_7);
+    }
 }

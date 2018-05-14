@@ -42,7 +42,7 @@ public class TranslationTextView extends android.support.v7.widget.AppCompatText
     }
 
     public String selectNextWord() {
-        if (translations.size() == 0) {
+        if (translations == null || translations.size() == 0) {
             return "";
         }
         if (selected < translations.size()-1) {
