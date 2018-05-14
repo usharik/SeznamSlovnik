@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Seznam Slovnik</string>
     <string name="app_name_offline">Seznam Slovnik - offline</string>
+    <string name="app_name_no_internet">Seznam Slovnik - no internet</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
@@ -13,4 +14,8 @@
     <string name="copy_all_to_clipboard">Copy all translation to clipboard</string>
     <string name="edit_translation">Edit translation</string>
     <string name="OK">OK</string>
+    <string name="additionalInfo">Additional Info</string>
+    <string name="dictCom">dict.com</string>
+    <string name="online">Online</string>
+    <string name="offline">Offline</string>
 </resources>

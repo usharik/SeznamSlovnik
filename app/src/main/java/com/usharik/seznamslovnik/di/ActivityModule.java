@@ -1,5 +1,6 @@
 package com.usharik.seznamslovnik.di;
 
+import com.usharik.seznamslovnik.DeclensionActivity;
 import com.usharik.seznamslovnik.MainActivity;
 
 import dagger.Module;
@@ -10,7 +11,10 @@ import dagger.android.ContributesAndroidInjector;
  */
 
 @Module
-public abstract class MainActivityModule {
+public abstract class ActivityModule {
     @ContributesAndroidInjector
     abstract MainActivity contributeMainActivity();
+
+    @ContributesAndroidInjector
+    abstract DeclensionActivity contributeDeclensionActivity();
 }

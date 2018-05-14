@@ -129,7 +129,10 @@ public class MainViewModel extends ViewModelObservable {
     }
 
     public int getActivityTitleResId() {
-        return !networkService.isNetworkConnected() || isOfflineMode() ? R.string.app_name_offline : R.string.app_name;
+        if (!networkService.isNetworkConnected()) {
+            return R.string.app_name_no_internet;
+        }
+        return isOfflineMode() ? R.string.app_name_offline : R.string.app_name;
     }
 
     public void onTextChanged(CharSequence s, int start, int before, int count) {

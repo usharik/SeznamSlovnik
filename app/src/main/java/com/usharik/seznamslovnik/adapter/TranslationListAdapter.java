@@ -15,7 +15,9 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.usharik.seznamslovnik.R;
+import com.usharik.seznamslovnik.UrlRepository;
 import com.usharik.seznamslovnik.action.Action;
+import com.usharik.seznamslovnik.action.DeclensionAction;
 import com.usharik.seznamslovnik.action.OpenUrlInBrowserAction;
 import com.usharik.seznamslovnik.action.ShowToastAction;
 import com.usharik.seznamslovnik.service.TranslationService;
@@ -135,12 +137,24 @@ public class TranslationListAdapter extends RecyclerView.Adapter<TranslationList
         Context wrapper = new ContextThemeWrapper(view.getContext(), R.style.PopupMenu);
         PopupMenu popup = new PopupMenu(wrapper, view.findViewById(R.id.optionsMenuButton));
         popup.inflate(R.menu.translation_options_menu);
+        popup.getMenu().findItem(R.id.additionalInfo).setVisible(langFrom.equals("cz"));
         popup.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
-                case R.id.openInBrowser:
+                case R.id.openInBrowser: {
                     int position = (Integer) ((View) view.getParent()).getTag();
-                    executeActionSubject.onNext(new OpenUrlInBrowserAction(String.format("https://slovnik.seznam.cz/%s-%s?q=%s", langFrom, langTo, suggestList.get(position))));
+                    executeActionSubject.onNext(new OpenUrlInBrowserAction(String.format("%s%s-%s?q=%s", UrlRepository.SEZNAM_TRANSLATE, langFrom, langTo, suggestList.get(position))));
                     break;
+                }
+                case R.id.additionalInfo: {
+                    int position = (Integer) ((View) view.getParent()).getTag();
+                    executeActionSubject.onNext(new DeclensionAction(suggestList.get(position)));
+                    break;
+                }
+                case R.id.dictCom: {
+                    int position = (Integer) ((View) view.getParent()).getTag();
+                    executeActionSubject.onNext(new OpenUrlInBrowserAction(String.format("%s%s", UrlRepository.DICT_COM, suggestList.get(position))));
+                    break;
+                }
                 case R.id.copyAllToClipboard:
                     break;
                 case R.id.editTranslation:

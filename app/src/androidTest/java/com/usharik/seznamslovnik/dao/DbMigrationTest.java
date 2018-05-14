@@ -85,4 +85,22 @@ public class DbMigrationTest {
         cursor = db.query("select * from WORD_TO_TRANSLATION where translation_id = " + translationId);
         Assert.assertEquals(0, cursor.getCount());
     }
+
+    @Test
+    public void migrate4To5() throws IOException {
+        SupportSQLiteDatabase db = helper.createDatabase(TEST_DB, 4);
+
+        db.close();
+
+        db = helper.runMigrationsAndValidate(TEST_DB, 5, true, AppDatabase.MIGRATION_4_5);
+    }
+
+    @Test
+    public void migrate5To6() throws IOException {
+        SupportSQLiteDatabase db = helper.createDatabase(TEST_DB, 5);
+
+        db.close();
+
+        db = helper.runMigrationsAndValidate(TEST_DB, 6, true, AppDatabase.MIGRATION_5_6);
+    }
 }

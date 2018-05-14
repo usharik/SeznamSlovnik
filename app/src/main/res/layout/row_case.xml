@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:layout_editor_absoluteY="81dp">
+
+    <TextView
+        android:id="@+id/caseNum"
+        android:layout_width="15dp"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/caseName"
+        android:background="@drawable/rect"
+        tools:text="1" />
+
+    <TextView
+        android:id="@+id/caseName"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/caseNum"
+        app:layout_constraintEnd_toStartOf="@id/caseHint"
+        android:background="@drawable/rect"
+        tools:text="Genetiv" />
+
+    <TextView
+        android:id="@+id/caseHint"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/caseName"
+        app:layout_constraintEnd_toEndOf="@id/singular"
+        android:background="@drawable/rect"
+        tools:text="bez" />
+
+    <TextView
+        android:id="@+id/caseQuestion"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="@id/plural"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@drawable/rect"
+        tools:text="koho? čeho?" />
+
+    <TextView
+        android:id="@+id/singular"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        app:layout_constraintTop_toBottomOf="@id/caseNum"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/plural"
+        android:background="@drawable/rect"
+        tools:text="Singular" />
+
+    <TextView
+        android:id="@+id/plural"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        app:layout_constraintTop_toBottomOf="@id/caseNum"
+        app:layout_constraintStart_toEndOf="@id/singular"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@drawable/rect"
+        tools:text="Plural" />
+
+</android.support.constraint.ConstraintLayout>

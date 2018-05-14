@@ -1,0 +1,147 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "503df14f2cfbddcca8061a1487275a6f",
+    "entities": [
+      {
+        "tableName": "WORD",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `word` TEXT, `lang` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "word",
+            "columnName": "word",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "lang",
+            "columnName": "lang",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_WORD_word",
+            "unique": false,
+            "columnNames": [
+              "word"
+            ],
+            "createSql": "CREATE  INDEX `index_WORD_word` ON `${TABLE_NAME}` (`word`)"
+          },
+          {
+            "name": "index_WORD_lang",
+            "unique": false,
+            "columnNames": [
+              "lang"
+            ],
+            "createSql": "CREATE  INDEX `index_WORD_lang` ON `${TABLE_NAME}` (`lang`)"
+          },
+          {
+            "name": "index_WORD_word_lang",
+            "unique": true,
+            "columnNames": [
+              "word",
+              "lang"
+            ],
+            "createSql": "CREATE UNIQUE INDEX `index_WORD_word_lang` ON `${TABLE_NAME}` (`word`, `lang`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "TRANSLATION",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `wordId` INTEGER, `translation` TEXT, `lang` TEXT, FOREIGN KEY(`wordId`) REFERENCES `TRANSLATION`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "wordId",
+            "columnName": "wordId",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "translation",
+            "columnName": "translation",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "lang",
+            "columnName": "lang",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_TRANSLATION_lang",
+            "unique": false,
+            "columnNames": [
+              "lang"
+            ],
+            "createSql": "CREATE  INDEX `index_TRANSLATION_lang` ON `${TABLE_NAME}` (`lang`)"
+          },
+          {
+            "name": "index_TRANSLATION_wordId",
+            "unique": false,
+            "columnNames": [
+              "wordId"
+            ],
+            "createSql": "CREATE  INDEX `index_TRANSLATION_wordId` ON `${TABLE_NAME}` (`wordId`)"
+          },
+          {
+            "name": "index_TRANSLATION_translation_lang",
+            "unique": true,
+            "columnNames": [
+              "translation",
+              "lang"
+            ],
+            "createSql": "CREATE UNIQUE INDEX `index_TRANSLATION_translation_lang` ON `${TABLE_NAME}` (`translation`, `lang`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "TRANSLATION",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "wordId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"503df14f2cfbddcca8061a1487275a6f\")"
+    ]
+  }
+}
