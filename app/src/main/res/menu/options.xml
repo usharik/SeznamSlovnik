@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/onlineMode"
+        android:checkable="true"
+        android:checked="true"
+        android:title=""
+        app:actionViewClass="android.widget.CheckBox"
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/backup"
-        android:title="@string/backup" />
+        android:title="@string/backup"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/restore"
-        android:title="@string/restore" />
+        android:title="@string/restore"
+        app:showAsAction="never" />
 </menu>

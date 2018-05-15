@@ -7,11 +7,13 @@ import com.usharik.seznamslovnik.databinding.ActivityDeclensionBinding;
 import com.usharik.seznamslovnik.framework.ViewActivity;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class DeclensionActivity extends ViewActivity<DeclensionViewModel> {
 
     private ActivityDeclensionBinding binding;
+    private Disposable disposable;
 
     @Override
     protected void onResume() {
@@ -19,7 +21,7 @@ public class DeclensionActivity extends ViewActivity<DeclensionViewModel> {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_declension);
         binding.setViewModel(getViewModel());
         binding.declensionList.setLayoutManager(new LinearLayoutManager(this));
-        getViewModel().getAdapter()
+        disposable = getViewModel().getAdapter()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(binding.declensionList::setAdapter);

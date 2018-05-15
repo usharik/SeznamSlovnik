@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Seznam Slovnik</string>
+    <string name="app_name_online">Seznam Slovnik - online</string>
     <string name="app_name_offline">Seznam Slovnik - offline</string>
     <string name="app_name_no_internet">Seznam Slovnik - no internet</string>
     <string name="title_home">Home</string>

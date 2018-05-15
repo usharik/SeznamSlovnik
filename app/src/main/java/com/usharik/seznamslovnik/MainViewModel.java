@@ -20,6 +20,7 @@ import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 
@@ -48,6 +49,7 @@ public class MainViewModel extends ViewModelObservable {
     private int scrollPosition;
     private int fromLanguageIx = 0;
     private int toLanguageIx = 1;
+    private CompositeDisposable disposables = new CompositeDisposable();
 
     private PublishSubject<TranslationListAdapter> answerPublishSubject = PublishSubject.create();
 
@@ -132,7 +134,7 @@ public class MainViewModel extends ViewModelObservable {
         if (!networkService.isNetworkConnected()) {
             return R.string.app_name_no_internet;
         }
-        return isOfflineMode() ? R.string.app_name_offline : R.string.app_name;
+        return isOfflineMode() ? R.string.app_name_offline : R.string.app_name_online;
     }
 
     public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -146,7 +148,8 @@ public class MainViewModel extends ViewModelObservable {
         String langFrom = LANG_ORDER_STR[fromLanguageIx];
         String langTo = LANG_ORDER_STR[toLanguageIx];
 
-        translationService.getSuggestions(input,
+        disposables.clear();
+        disposables.add(translationService.getSuggestions(input,
                 langFrom,
                 langTo,
                 appState.suggestionCount,
@@ -161,9 +164,10 @@ public class MainViewModel extends ViewModelObservable {
                             answerPublishSubject.onNext(adapter);
                         },
                         thr -> {
-                            Log.e(getClass().getName(), thr.getLocalizedMessage());
+                            Log.e(getClass().getName(), thr.getLocalizedMessage(), thr);
                             executeActionSubject.onNext(new ShowToastAction(thr.getLocalizedMessage()));
-                        });
+                        })
+        );
     }
 
     public TranslationListAdapter getAdapter() {

@@ -62,7 +62,7 @@ public class TranslationService {
                     try {
                         getDao().insertTranslationsForWord(wrp.word, wrp.langFrom, wrp.translations, wrp.langTo);
                     } catch (Exception ex) {
-                        Log.e(getClass().getName(), ex.getLocalizedMessage());
+                        Log.e(getClass().getName(), ex.getLocalizedMessage(), ex);
                     }
                 });
     }
@@ -197,7 +197,7 @@ public class TranslationService {
             }
             return Pair.create(word, transList);
         } catch (Exception e) {
-            Log.e(getClass().getName(), e.getLocalizedMessage());
+            Log.e(getClass().getName(), e.getLocalizedMessage(), e);
             executeActionSubject.onNext(new ShowToastAction(e.getLocalizedMessage()));
             return Pair.create(word, EMPTY_STR_LIST);
         }

@@ -103,7 +103,7 @@ public class TranslationListAdapter extends RecyclerView.Adapter<TranslationList
                             tvTranslation.setTranslations(pair.second);
                         },
                         thr -> {
-                            Log.e(getClass().getName(), thr.getLocalizedMessage());
+                            Log.e(getClass().getName(), thr.getLocalizedMessage(), thr);
                             executeActionSubject.onNext(new ShowToastAction(thr.getLocalizedMessage()));
                         });
     }

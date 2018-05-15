@@ -11,6 +11,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
 import com.usharik.seznamslovnik.action.Action;
@@ -62,8 +63,6 @@ public class MainActivity extends ViewActivity<MainViewModel> {
             hideSoftKeyboard(this);
             return view.performClick();
         });
-        binding.onLine.setChecked(!getViewModel().isOfflineMode());
-        binding.onLine.setOnCheckedChangeListener(this::onCheckedChanged);
 
         compositeDisposable.add(getViewModel().getAnswerPublishSubject().subscribe(adapter -> binding.myRecyclerView.setAdapter(adapter)));
     }
@@ -80,6 +79,11 @@ public class MainActivity extends ViewActivity<MainViewModel> {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.options, menu);
+        MenuItem item = menu.findItem(R.id.onlineMode);
+        CheckBox checkBox = (CheckBox) item.getActionView();
+        checkBox.setOnCheckedChangeListener(this::onCheckedChanged);
+        checkBox.setChecked(!getViewModel().isOfflineMode());
+
         return true;
     }
 

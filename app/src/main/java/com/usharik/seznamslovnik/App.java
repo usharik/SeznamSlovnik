@@ -105,7 +105,7 @@ public class App extends Application implements HasActivityInjector {
         message.toList()
                 .map(HashSet::new)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe((set) -> {
+                .subscribe(set -> {
                     if (set.isEmpty()) {
                         return;
                     }
