@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.usharik.seznamslovnik.action.Action;
 import com.usharik.seznamslovnik.action.OpenUrlInBrowserAction;
+import com.usharik.seznamslovnik.action.ShowToastAction;
 import com.usharik.seznamslovnik.adapter.DeclensionAdapter;
 import com.usharik.seznamslovnik.adapter.FormsOfVerbAdapter;
 import com.usharik.seznamslovnik.dao.DatabaseManager;
@@ -132,7 +133,8 @@ public class DeclensionViewModel extends ViewModelObservable {
                 adapter = new DeclensionAdapter(Collections.emptyMap(), Collections.emptyMap());
             }
         } catch (Exception ex) {
-            Log.e(getClass().getName(), "!!!!!", ex);
+            Log.e(getClass().getName(), ex.getLocalizedMessage(), ex);
+            executeActionSubject.onNext(new ShowToastAction(ex.getLocalizedMessage()));
         } finally {
             notifyPropertyChanged(BR.wordInfo);
         }
