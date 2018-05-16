@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,12 +18,18 @@ import android.widget.CompoundButton;
 import com.usharik.seznamslovnik.action.Action;
 import com.usharik.seznamslovnik.action.BackupDictionaryAction;
 import com.usharik.seznamslovnik.action.RestoreDictionaryAction;
+import com.usharik.seznamslovnik.action.ShowToastAction;
+import com.usharik.seznamslovnik.dao.DatabaseManager;
 import com.usharik.seznamslovnik.databinding.ActivityMainBinding;
 import com.usharik.seznamslovnik.framework.ViewActivity;
+import com.usharik.seznamslovnik.util.WaitDialogManager;
 
 import javax.inject.Inject;
 
+import io.reactivex.Completable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 
 public class MainActivity extends ViewActivity<MainViewModel> {
@@ -36,12 +43,17 @@ public class MainActivity extends ViewActivity<MainViewModel> {
     @Inject
     PublishSubject<Action> executeActionSubject;
 
+    @Inject
+    DatabaseManager databaseManager;
+
     private ActivityMainBinding binding;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private PublishSubject<Boolean> permissionRequestSubject;
 
     private int fromLanguageIx = 0;
     private int toLanguageIx = 1;
+
+    private volatile boolean isDictLoadingInProgress = false;
 
     public final static int[] LANG_ORDER = {R.drawable.cz, R.drawable.ru, R.drawable.gb};
     public final static String[] LANG_ORDER_STR = {"cz", "ru", "en"};
@@ -65,6 +77,25 @@ public class MainActivity extends ViewActivity<MainViewModel> {
         });
 
         compositeDisposable.add(getViewModel().getAnswerPublishSubject().subscribe(adapter -> binding.myRecyclerView.setAdapter(adapter)));
+        if (!isDictLoadingInProgress) {
+            checkPermissionAndExecute(this::loadDictionaryFromUrl);
+        }
+    }
+
+    private void loadDictionaryFromUrl() {
+        databaseManager.getActiveDbInstance().translationStorageDao().getWordCount()
+                .filter(val -> val == 0)
+                .flatMapCompletable(val -> {
+                    isDictLoadingInProgress = true;
+                    executeActionSubject.onNext(new ShowToastAction("Downloading dictionary file"));
+                    databaseManager.restoreFromUrl();
+                    executeActionSubject.onNext(new ShowToastAction("Dictionary file successfully downloaded"));
+                    return Completable.complete();
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .compose(WaitDialogManager.showForCompletable(getSupportFragmentManager()))
+                .subscribe(() -> { }, this::onError);
     }
 
     @Override
@@ -88,37 +119,38 @@ public class MainActivity extends ViewActivity<MainViewModel> {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
-        switch(item.getItemId()) {
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
             case R.id.backup:
-                if (isExternalStoragePermitted()) {
-                    executeActionSubject.onNext(new BackupDictionaryAction());
-                    return true;
-                }
-                permissionRequestSubject = PublishSubject.create();
-                permissionRequestSubject.subscribe(allowed -> {
-                    if (allowed) {
-                        executeActionSubject.onNext(new BackupDictionaryAction());
-                    }
-                });
-                requestStoragePermissions();
+                checkPermissionAndExecute(() -> executeActionSubject.onNext(new BackupDictionaryAction()));
                 return true;
             case R.id.restore:
-                if (isExternalStoragePermitted()) {
-                    executeActionSubject.onNext(new RestoreDictionaryAction());
-                    return true;
-                }
-                permissionRequestSubject = PublishSubject.create();
-                permissionRequestSubject.subscribe(allowed -> {
-                    if (allowed) {
-                        executeActionSubject.onNext(new RestoreDictionaryAction());
-                    }
-                });
-                requestStoragePermissions();
+                checkPermissionAndExecute(() -> executeActionSubject.onNext(new RestoreDictionaryAction()));
                 return true;
             default:
                 return true;
         }
+    }
+
+    private void checkPermissionAndExecute(io.reactivex.functions.Action action) {
+        if (isExternalStoragePermitted()) {
+            try {
+                action.run();
+                return;
+            } catch (Exception ex) {
+                onError(ex);
+                return;
+            }
+        }
+        permissionRequestSubject = PublishSubject.create();
+        permissionRequestSubject.subscribe(
+                allowed -> {
+                    if (allowed) {
+                        action.run();
+                    }
+                },
+                this::onError);
+        requestStoragePermissions();
     }
 
     @Override
@@ -154,8 +186,8 @@ public class MainActivity extends ViewActivity<MainViewModel> {
     }
 
     public void onFromClick(View v) {
-        if (fromLanguageIx == LANG_ORDER.length-1) {
-            fromLanguageIx=0;
+        if (fromLanguageIx == LANG_ORDER.length - 1) {
+            fromLanguageIx = 0;
         } else {
             fromLanguageIx++;
         }
@@ -171,8 +203,8 @@ public class MainActivity extends ViewActivity<MainViewModel> {
     }
 
     public void onToClick(View v) {
-        if (toLanguageIx == LANG_ORDER.length-1) {
-            toLanguageIx=0;
+        if (toLanguageIx == LANG_ORDER.length - 1) {
+            toLanguageIx = 0;
         } else {
             toLanguageIx++;
         }
@@ -217,12 +249,16 @@ public class MainActivity extends ViewActivity<MainViewModel> {
         }
         InputMethodManager inputMethodManager =
                 (InputMethodManager) activity.getSystemService(
-                        Activity.INPUT_METHOD_SERVICE);
-        if (inputMethodManager == null) {
+                        Activity.INPUT_METHOD_SERVICE);if (inputMethodManager == null) {
             return;
         }
         inputMethodManager.hideSoftInputFromWindow(
                 activity.getCurrentFocus().getWindowToken(), 0);
+    }
+
+    public void onError(Throwable thr) {
+        executeActionSubject.onNext(new ShowToastAction(thr.getLocalizedMessage() != null ? thr.getLocalizedMessage() : "null"));
+        Log.e(getClass().getName(), thr.getLocalizedMessage(), thr);
     }
 
     @Override

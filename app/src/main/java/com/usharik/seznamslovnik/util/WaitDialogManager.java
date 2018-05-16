@@ -13,6 +13,7 @@ import android.view.Window;
 
 import com.usharik.seznamslovnik.R;
 
+import io.reactivex.CompletableTransformer;
 import io.reactivex.ObservableTransformer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
@@ -30,6 +31,8 @@ public class WaitDialogManager {
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             Dialog dialog = super.onCreateDialog(savedInstanceState);
             dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+            dialog.setCancelable(false);
+            dialog.setCanceledOnTouchOutside(false);
             return dialog;
         }
 
@@ -40,7 +43,16 @@ public class WaitDialogManager {
         }
     }
 
-    public static <T> ObservableTransformer<T, T> showWaitDialog(FragmentManager fragmentManager) {
+    public static <T> ObservableTransformer<T, T> showForObservable(FragmentManager fragmentManager) {
+        ActionConsumer actionConsumer = new ActionConsumer(WaitDialogFragment.newInstance(), fragmentManager);
+        return observable -> observable
+                .doOnSubscribe(actionConsumer)
+                .doOnComplete(actionConsumer)
+                .doOnTerminate(actionConsumer)
+                .doOnDispose(actionConsumer);
+    }
+
+    public static CompletableTransformer showForCompletable(FragmentManager fragmentManager) {
         ActionConsumer actionConsumer = new ActionConsumer(WaitDialogFragment.newInstance(), fragmentManager);
         return observable -> observable
                 .doOnSubscribe(actionConsumer)

@@ -20,9 +20,13 @@ import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Maybe;
+import io.reactivex.Single;
 
 @Dao
 public abstract class TranslationStorageDao {
+
+    @Query("select count(*) from WORD")
+    public abstract Single<Long> getWordCount();
 
     @Query("select * from WORD")
     public abstract List<Word> getAllWords();

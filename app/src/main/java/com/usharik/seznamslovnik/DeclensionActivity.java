@@ -34,13 +34,13 @@ public class DeclensionActivity extends ViewActivity<DeclensionViewModel> {
         disposable = getViewModel().getAdapter()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .compose(WaitDialogManager.showWaitDialog(getSupportFragmentManager()))
+                .compose(WaitDialogManager.showForObservable(getSupportFragmentManager()))
                 .subscribe(binding.declensionList::setAdapter, this::onError);
         binding.linkToSource.setText(getViewModel().getLink());
-    }
+   }
 
     public void onError(Throwable thr) {
-        executeActionSubject.onNext(new ShowToastAction(thr.getLocalizedMessage()));
+        executeActionSubject.onNext(new ShowToastAction(thr.getLocalizedMessage() != null ? thr.getLocalizedMessage() : "null"));
         Log.e(getClass().getName(), thr.getLocalizedMessage(), thr);
     }
 

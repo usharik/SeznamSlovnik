@@ -20,7 +20,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Calendar;
 
-
 @Database(
         entities = {
                 Word.class,
@@ -35,7 +34,7 @@ import java.util.Calendar;
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
 
-    static final String DB_NAME = "slovnik-database";
+    public static final String DB_NAME = "slovnik-database";
 
     public abstract TranslationStorageDao translationStorageDao();
 
