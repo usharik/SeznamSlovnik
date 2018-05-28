@@ -33,7 +33,7 @@ import io.reactivex.subjects.PublishSubject;
 public class TranslationListAdapter extends RecyclerView.Adapter<TranslationListAdapter.ViewHolder> {
 
     private final List<String> suggestList;
-    private final Map<Integer, List<String>> translations;
+    private final Map<Integer, TranslationResult> translations;
     private final TranslationService translationService;
     private final ClipboardManager clipboardManager;
     private final Vibrator vibrator;
@@ -85,27 +85,32 @@ public class TranslationListAdapter extends RecyclerView.Adapter<TranslationList
         holder.view.setTag(position);
         TextView tvWord = holder.view.findViewById(R.id.word);
         TranslationTextView tvTranslation = holder.view.findViewById(R.id.translations);
+        TextView tvGender = holder.view.findViewById(R.id.gender);
         tvWord.setText(suggestList.get(position));
         TextView optionsMenuButton = holder.view.findViewById(R.id.optionsMenuButton);
         optionsMenuButton.setOnClickListener(this::onOptionsMenuClick);
 
         if (translations.containsKey(position)) {
-            tvTranslation.setTranslations(translations.get(position));
+            TranslationResult result = translations.get(position);
+            tvTranslation.setTranslations(result.getTranslations());
+            tvGender.setText(result.getGender());
             return;
         }
         translationService.translate(suggestList.get(position), langFrom, langTo)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        pair -> {
-                            translations.put(position, pair.second);
-                            suggestList.set(position, pair.first);
-                            tvWord.setText(pair.first);
-                            tvTranslation.setTranslations(pair.second);
+                        result -> {
+                            translations.put(position, result);
+                            suggestList.set(position, result.getWord());
+                            tvWord.setText(result.getWord());
+                            tvTranslation.setTranslations(result.getTranslations());
+                            tvGender.setText(result.getGender());
                         },
                         thr -> {
                             Log.e(getClass().getName(), thr.getLocalizedMessage(), thr);
                             executeActionSubject.onNext(new ShowToastAction(thr.getLocalizedMessage()));
-                        });
+                        },
+                        () -> { });
     }
 
     @Override

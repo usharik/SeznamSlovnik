@@ -19,4 +19,5 @@
     <string name="dictCom">dict.com</string>
     <string name="online">Online</string>
     <string name="offline">Offline</string>
+    <string name="menu_symbol">⋮</string>
 </resources>

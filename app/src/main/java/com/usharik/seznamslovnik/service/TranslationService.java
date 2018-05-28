@@ -1,11 +1,11 @@
 package com.usharik.seznamslovnik.service;
 
 import android.util.Log;
-import android.util.Pair;
 
 import com.usharik.seznamslovnik.AppState;
 import com.usharik.seznamslovnik.action.Action;
 import com.usharik.seznamslovnik.action.ShowToastAction;
+import com.usharik.seznamslovnik.adapter.TranslationResult;
 import com.usharik.seznamslovnik.dao.DatabaseManager;
 import com.usharik.seznamslovnik.dao.TranslationStorageDao;
 import com.usharik.seznamslovnik.dao.entity.Word;
@@ -27,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
-import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 import retrofit2.Retrofit;
@@ -40,7 +39,6 @@ public class TranslationService {
 
     private static final List<String> EMPTY_STR_LIST = Collections.unmodifiableList(new ArrayList<>());
 
-    private final PublishSubject<Wrapper> storeSubject = PublishSubject.create();
     private final DatabaseManager databaseManager;
     private final AppState appState;
     private final Retrofit seznamRetrofit;
@@ -57,14 +55,6 @@ public class TranslationService {
         this.seznamRetrofit = seznamRetrofit;
         this.seznamSuggestRetrofit = seznamSuggestRetrofit;
         this.executeActionSubject = executeActionSubject;
-        storeSubject.observeOn(Schedulers.io())
-                .subscribe(wrp -> {
-                    try {
-                        getDao().insertTranslationsForWord(wrp.word, wrp.langFrom, wrp.translations, wrp.langTo);
-                    } catch (Exception ex) {
-                        Log.e(getClass().getName(), ex.getLocalizedMessage(), ex);
-                    }
-                });
     }
 
     private TranslationStorageDao getDao() {
@@ -103,38 +93,30 @@ public class TranslationService {
                 .firstElement();
     }
 
-    public Single<Pair<String, List<String>>> translate(String question, String langFrom, String langTo) {
+    public Maybe<TranslationResult> translate(String question, String langFrom, String langTo) {
         if (question == null || question.length() == 0) {
-            return Single.just(Pair.create("", EMPTY_STR_LIST));
+            return Maybe.empty();
         }
 
-        return existsActualTranslation(question, langFrom, langTo)
+        return getActualOfflineTranslation(question, langFrom, langTo)
                 .subscribeOn(Schedulers.io())
-                .flatMap(exists -> {
-                    if (exists) {
-                        return getDao()
-                                .getTranslations(question, langFrom, langTo, 1000)
-                                .flatMapSingle(list -> Single.just(Pair.create(question, list)));
-                    } else if (!appState.isOfflineMode) {
-                        return runOnlineTranslation(question, langFrom, langTo);
-                    } else {
-                        return Single.just(Pair.create(question, EMPTY_STR_LIST));
-                    }
-                });
+                .switchIfEmpty(getOnlineTranslation(question, langFrom, langTo));
     }
 
-    private Single<Boolean> existsActualTranslation(String question, String langFrom, String langTo) {
+    private Maybe<TranslationResult> getActualOfflineTranslation(String question, String langFrom, String langTo) {
         return getDao().getWord(question, langFrom)
-                .switchIfEmpty(Single.just(Word.NULL_WORD))
                 .flatMap(word -> {
-                    if (word == Word.NULL_WORD || (isOldTranslation(word) && !appState.isOfflineMode)) {
-                        return Single.just(EMPTY_STR_LIST);
+                    if (isOldTranslation(word) && !appState.isOfflineMode) {
+                        return Maybe.empty();
                     } else {
-                        return getDao().getTranslations(question, langFrom, langTo, 1)
-                                .switchIfEmpty(Single.just(EMPTY_STR_LIST));
+                        return getDao()
+                                .getTranslations(question, langFrom, langTo, 1000)
+                                .flatMap(list -> Maybe.just(new TranslationResult(
+                                        question,
+                                        list,
+                                        getDao().getWordGender(word.getId()))));
                     }
-                })
-                .flatMap(list -> Single.just(!list.isEmpty()));
+                });
     }
 
     private boolean isOldTranslation(Word word) {
@@ -142,26 +124,30 @@ public class TranslationService {
         return TimeUnit.DAYS.convert(curr.getTime() - word.getLoadDate().getTime(), TimeUnit.MILLISECONDS) >= 7;
     }
 
-    private void storeTranslation(String word, String langFrom, List<String> translations, String langTo) {
-        storeSubject.onNext(new Wrapper(word, langFrom, translations, langTo));
+    private long storeTranslation(String word, String langFrom, List<String> translations, String langTo) {
+        return getDao().insertTranslationsForWord(word, langFrom, translations, langTo);
     }
 
-    private Single<Pair<String, List<String>>> runOnlineTranslation(String question, String langFrom, String langTo) {
+    private Maybe<TranslationResult> getOnlineTranslation(String question, String langFrom, String langTo) {
+        if (appState.isOfflineMode) {
+            return Maybe.empty();
+        }
         return seznamRetrofit.create(SeznamRestInterface.class).doTranslate(
                 langFrom,
                 langTo,
                 question)
                 .flatMap(response -> {
-                    Pair<String, List<String>> translation = parseResponse(question, response.string());
-                    if (translation.second.size() > 0) {
-                        storeTranslation(translation.first, langFrom, translation.second, langTo);
+                    TranslationResult translation = parseResponse(question, response.string());
+                    if (translation.getTranslations().size() > 0) {
+                        long wordId = storeTranslation(translation.getWord(), langFrom, translation.getTranslations(), langTo);
+                        translation.setGender(getDao().getWordGender(wordId));
                     }
                     return Observable.just(translation);
                 })
-                .firstOrError();
+                .firstElement();
     }
 
-    private Pair<String, List<String>> parseResponse(String word, String responseText) {
+    private TranslationResult parseResponse(String word, String responseText) {
         try {
             Document html = Jsoup.parse(responseText);
 
@@ -195,11 +181,11 @@ public class TranslationService {
                     }
                 }
             }
-            return Pair.create(word, transList);
+            return new TranslationResult(word, transList);
         } catch (Exception e) {
             Log.e(getClass().getName(), e.getLocalizedMessage(), e);
             executeActionSubject.onNext(new ShowToastAction(e.getLocalizedMessage()));
-            return Pair.create(word, EMPTY_STR_LIST);
+            return new TranslationResult(word, EMPTY_STR_LIST);
         }
     }
 

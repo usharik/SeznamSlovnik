@@ -37,6 +37,14 @@ public abstract class TranslationStorageDao {
     @Query("select * from WORD where word = :word and lang = :lang")
     public abstract Maybe<Word> getWord(String word, String lang);
 
+    @Query("select info " +
+            " from WORD_INFO " +
+            "where info like 'rod:%' " +
+            "  and word_id = :wordId " +
+            "order by word_id " +
+            "limit 1")
+    public abstract String getWordGender(long wordId);
+
     @Query("select id from WORD where word = :word and lang = :lang")
     public abstract Long getWordId(String word, String lang);
 
@@ -101,7 +109,7 @@ public abstract class TranslationStorageDao {
     public abstract List<String> getWordInfo(String word);
 
     @Transaction
-    public void insertTranslationsForWord(String request, String langFrom, List<String> translations, String langTo) {
+    public long insertTranslationsForWord(String request, String langFrom, List<String> translations, String langTo) {
         Long wordId = getWordId(request, langFrom);
         if (wordId == null) {
             wordId = insertWord(new Word(request, StringUtils.stripAccents(request), langFrom));
@@ -115,6 +123,7 @@ public abstract class TranslationStorageDao {
             }
             insertWordToTranslation(new WordToTranslation(wordId, translationId));
         }
+        return wordId;
     }
 
     @Query("update WORD " +

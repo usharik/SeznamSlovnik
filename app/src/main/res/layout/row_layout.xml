@@ -18,6 +18,17 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Word" />
 
+    <TextView
+        android:id="@+id/gender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="30dp"
+        android:textStyle="italic"
+        android:textColor="@color/cray"
+        app:layout_constraintStart_toEndOf="@+id/word"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="rod. m. neziv." />
+
     <com.usharik.seznamslovnik.widget.TranslationTextView
         android:id="@+id/translations"
         android:layout_width="wrap_content"
@@ -35,6 +46,6 @@
         android:paddingTop="6dp"
         android:paddingBottom="6dp"
         app:layout_constraintEnd_toEndOf="parent"
-        android:text="&#8942;" />
+        android:text="@string/menu_symbol" />
 
 </android.support.constraint.ConstraintLayout>
