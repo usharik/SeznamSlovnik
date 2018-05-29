@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModelProvider;
 
 import com.usharik.seznamslovnik.DeclensionViewModel;
 import com.usharik.seznamslovnik.MainViewModel;
+import com.usharik.seznamslovnik.dialog.ProxyDialogViewModel;
 
 import dagger.Binds;
 import dagger.Module;
@@ -25,6 +26,11 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(DeclensionViewModel.class)
     abstract ViewModel bindDeclensionViewModel(DeclensionViewModel userViewModel);
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ProxyDialogViewModel.class)
+    abstract ViewModel bindProxyDialogViewModel(ProxyDialogViewModel userViewModel);
 
     @Binds
     abstract ViewModelProvider.Factory bindViewModelFactory(AppViewModelFactory factory);

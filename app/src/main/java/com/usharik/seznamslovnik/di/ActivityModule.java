@@ -2,6 +2,7 @@ package com.usharik.seznamslovnik.di;
 
 import com.usharik.seznamslovnik.DeclensionActivity;
 import com.usharik.seznamslovnik.MainActivity;
+import com.usharik.seznamslovnik.dialog.ProxyDialog;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -17,4 +18,7 @@ public abstract class ActivityModule {
 
     @ContributesAndroidInjector
     abstract DeclensionActivity contributeDeclensionActivity();
+
+    @ContributesAndroidInjector
+    abstract ProxyDialog contributeProxyDialog();
 }

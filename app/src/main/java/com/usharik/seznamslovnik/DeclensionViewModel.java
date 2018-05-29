@@ -95,7 +95,7 @@ public class DeclensionViewModel extends ViewModelObservable {
                 return new DeclensionAdapter(Collections.emptyMap(), Collections.emptyMap());
             }
 
-            WordInfoService.ParsedWordInfo wordInfo = wordInfoService.getWordInfoFromPriruckaUjcCas(word);
+            WordInfoService.ParsedWordInfo wordInfo = wordInfoService.getWordInfoFromPriruckaUjcCas(word, appState.proxyInfo.getProxy());
 
             Long wordId = dao.getWordId(word, "cz");
             if (this.wordInfo.size() == 0) {
@@ -134,7 +134,7 @@ public class DeclensionViewModel extends ViewModelObservable {
             }
         } catch (Exception ex) {
             Log.e(getClass().getName(), ex.getLocalizedMessage(), ex);
-            executeActionSubject.onNext(new ShowToastAction(ex.getLocalizedMessage()));
+            executeActionSubject.onNext(new ShowToastAction(ex.getLocalizedMessage() != null ? ex.getLocalizedMessage() : ex.getClass().getName()));
         } finally {
             notifyPropertyChanged(BR.wordInfo);
         }

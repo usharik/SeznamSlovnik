@@ -1,12 +1,18 @@
 package com.usharik.seznamslovnik;
 
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import com.usharik.seznamslovnik.action.Action;
 import com.usharik.seznamslovnik.action.ShowToastAction;
 import com.usharik.seznamslovnik.databinding.ActivityDeclensionBinding;
+import com.usharik.seznamslovnik.dialog.ProxyDialog;
 import com.usharik.seznamslovnik.framework.ViewActivity;
 import com.usharik.seznamslovnik.util.WaitDialogManager;
 
@@ -31,16 +37,52 @@ public class DeclensionActivity extends ViewActivity<DeclensionViewModel> {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_declension);
         binding.setViewModel(getViewModel());
         binding.declensionList.setLayoutManager(new LinearLayoutManager(this));
-        disposable = getViewModel().getAdapter()
+        disposable = updateWordForms();
+        binding.linkToSource.setText(getViewModel().getLink());
+    }
+
+    private Disposable updateWordForms() {
+        return getViewModel().getAdapter()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .compose(WaitDialogManager.showForObservable(getSupportFragmentManager()))
                 .subscribe(binding.declensionList::setAdapter, this::onError);
-        binding.linkToSource.setText(getViewModel().getLink());
-   }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.dec_options, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.proxyDialog:
+                showProxyDialog();
+                return true;
+            case R.id.updateInfo:
+                disposable = updateWordForms();
+                return true;
+            default:
+                return true;
+        }
+    }
+
+    private void showProxyDialog() {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        Fragment prev = getSupportFragmentManager().findFragmentByTag("proxy_dialog");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+        ProxyDialog proxyDialog = new ProxyDialog();
+        proxyDialog.show(ft, "proxy_dialog");
+    }
 
     public void onError(Throwable thr) {
-        executeActionSubject.onNext(new ShowToastAction(thr.getLocalizedMessage() != null ? thr.getLocalizedMessage() : "null"));
+        executeActionSubject.onNext(new ShowToastAction(thr.getLocalizedMessage() != null ? thr.getLocalizedMessage() : thr.getClass().getName()));
         Log.e(getClass().getName(), thr.getLocalizedMessage(), thr);
     }
 

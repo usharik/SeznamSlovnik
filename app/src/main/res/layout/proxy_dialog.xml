@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.usharik.seznamslovnik.dialog.ProxyDialogViewModel" />
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <CheckBox
+            android:id="@+id/useProxy"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/use_proxy"
+            android:checked="@={viewModel.useProxy}"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Spinner
+            android:id="@+id/proxies"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:selectedItemPosition="@={viewModel.selectedProxyIndex}"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/useProxy" />
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

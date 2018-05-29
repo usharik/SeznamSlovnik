@@ -11,6 +11,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -60,8 +61,8 @@ public class WordInfoService {
         }
     }
 
-    public ParsedWordInfo getWordInfoFromPriruckaUjcCas(String word) throws IOException {
-        OkHttpClient client = new OkHttpClient();
+    public ParsedWordInfo getWordInfoFromPriruckaUjcCas(String word, Proxy proxy) throws IOException {
+        OkHttpClient client = new OkHttpClient.Builder().proxy(proxy).build();
         Request req = new Request.Builder()
                 .url(String.format("%s?slovo=%s", UrlRepository.PRIRUCKA_UJC_CAS, word))
                 .build();
