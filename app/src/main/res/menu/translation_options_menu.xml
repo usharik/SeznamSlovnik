@@ -13,6 +13,10 @@
         android:title="@string/dictCom" />
 
     <item
+        android:id="@+id/translateBack"
+        android:title="@string/translate_back" />
+
+    <item
         android:id="@+id/copyAllToClipboard"
         android:title="@string/copy_all_to_clipboard"
         android:visible="false" />

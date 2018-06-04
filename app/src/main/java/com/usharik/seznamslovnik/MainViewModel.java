@@ -7,7 +7,6 @@ import android.databinding.Bindable;
 import android.os.Vibrator;
 import android.util.Log;
 
-import com.usharik.seznamslovnik.action.Action;
 import com.usharik.seznamslovnik.action.ShowToastAction;
 import com.usharik.seznamslovnik.adapter.TranslationListAdapter;
 import com.usharik.seznamslovnik.service.TranslationService;
@@ -37,18 +36,14 @@ public class MainViewModel extends ViewModelObservable {
     private final AppState appState;
     private final TranslationService translationService;
     private final NetworkService networkService;
-    private final PublishSubject<Action> executeActionSubject;
+    private final PublishSubject<com.usharik.seznamslovnik.action.Action> executeActionSubject;
     private final Resources resources;
     private final ClipboardManager clipboardManager;
     private final Vibrator vibrator;
     private final SharedPreferences sharedPreferences;
 
-    private String text;
-    private String word;
     private TranslationListAdapter adapter;
     private int scrollPosition;
-    private int fromLanguageIx = 0;
-    private int toLanguageIx = 1;
     private CompositeDisposable disposables = new CompositeDisposable();
 
     private PublishSubject<TranslationListAdapter> answerPublishSubject = PublishSubject.create();
@@ -57,7 +52,7 @@ public class MainViewModel extends ViewModelObservable {
     public MainViewModel(final AppState appState,
                          final TranslationService translationService,
                          final NetworkService networkService,
-                         final PublishSubject<Action> executeActionSubject,
+                         final PublishSubject<com.usharik.seznamslovnik.action.Action> executeActionSubject,
                          final Resources resources,
                          final ClipboardManager clipboardManager,
                          final Vibrator vibrator,
@@ -76,42 +71,26 @@ public class MainViewModel extends ViewModelObservable {
     }
 
     @Bindable
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-        notifyPropertyChanged(BR.text);
-    }
-
-    @Bindable
     public String getWord() {
-        return word;
+        return appState.getWord();
     }
 
     @Bindable
     public void setWord(String word) {
-        this.word = word;
+        appState.setWord(word);
         notifyPropertyChanged(BR.word);
     }
 
     public int getFromLanguageIx() {
-        return fromLanguageIx;
+        return appState.getFromLanguageIx();
     }
 
-    public void setFromLanguageIx(int fromLanguageIx) {
-        this.fromLanguageIx = fromLanguageIx;
-        appState.fromLanguageIx = fromLanguageIx;
+    public void setTranslationMode(int fromLanguageIx, int toLanguageIx) {
+        appState.setTranslationMode(appState.getWord(), fromLanguageIx, toLanguageIx);
     }
 
     public int getToLanguageIx() {
-        return toLanguageIx;
-    }
-
-    public void setToLanguageIx(int toLanguageIx) {
-        this.toLanguageIx = toLanguageIx;
-        appState.toLanguageIx = toLanguageIx;
+        return appState.getToLanguageIx();
     }
 
     public void refreshSuggestion() {
@@ -141,15 +120,15 @@ public class MainViewModel extends ViewModelObservable {
         if (s == null) {
             return;
         }
-        String input = s.toString().trim();
-        if (input.isEmpty()) {
+        appState.setWord(s.toString().trim());
+        if (appState.getWord().isEmpty()) {
             return;
         }
-        String langFrom = LANG_ORDER_STR[fromLanguageIx];
-        String langTo = LANG_ORDER_STR[toLanguageIx];
+        String langFrom = LANG_ORDER_STR[appState.getFromLanguageIx()];
+        String langTo = LANG_ORDER_STR[appState.getToLanguageIx()];
 
         disposables.clear();
-        disposables.add(translationService.getSuggestions(input,
+        disposables.add(translationService.getSuggestions(appState.getWord(),
                 langFrom,
                 langTo,
                 appState.suggestionCount,
@@ -160,7 +139,8 @@ public class MainViewModel extends ViewModelObservable {
                 .subscribe(
                         strings -> {
                             scrollPosition = 0;
-                            adapter = new TranslationListAdapter(strings, translationService, clipboardManager, vibrator, executeActionSubject, resources, langFrom, langTo);
+                            adapter = new TranslationListAdapter(strings, translationService, clipboardManager, vibrator,
+                                    executeActionSubject, resources, appState.getFromLanguageIx(), appState.getToLanguageIx());
                             answerPublishSubject.onNext(adapter);
                         },
                         thr -> {
@@ -183,9 +163,8 @@ public class MainViewModel extends ViewModelObservable {
     }
 
     private TranslationListAdapter getEmptyAdapter() {
-        String langFrom = LANG_ORDER_STR[fromLanguageIx];
-        String langTo = LANG_ORDER_STR[toLanguageIx];
-        return new TranslationListAdapter(Collections.EMPTY_LIST, translationService, clipboardManager, vibrator, executeActionSubject, resources, langFrom, langTo);
+        return new TranslationListAdapter(Collections.EMPTY_LIST, translationService, clipboardManager,
+                vibrator, executeActionSubject, resources, appState.getFromLanguageIx(), appState.getToLanguageIx());
     }
 
     @Override

@@ -17,6 +17,7 @@ import android.widget.CompoundButton;
 
 import com.usharik.seznamslovnik.action.Action;
 import com.usharik.seznamslovnik.action.BackupDictionaryAction;
+import com.usharik.seznamslovnik.action.PrevWordAction;
 import com.usharik.seznamslovnik.action.RestoreDictionaryAction;
 import com.usharik.seznamslovnik.action.ShowToastAction;
 import com.usharik.seznamslovnik.dao.DatabaseManager;
@@ -57,6 +58,7 @@ public class MainActivity extends ViewActivity<MainViewModel> {
 
     public final static int[] LANG_ORDER = {R.drawable.cz, R.drawable.ru, R.drawable.gb};
     public final static String[] LANG_ORDER_STR = {"cz", "ru", "en"};
+    public final static int CZ_INDEX = 0;
 
     @Override
     protected void onResume() {
@@ -80,6 +82,7 @@ public class MainActivity extends ViewActivity<MainViewModel> {
         if (!isDictLoadingInProgress) {
             checkPermissionAndExecute(this::loadDictionaryFromUrl);
         }
+        getViewModel().refreshSuggestion();
     }
 
     private void loadDictionaryFromUrl() {
@@ -130,6 +133,11 @@ public class MainActivity extends ViewActivity<MainViewModel> {
             default:
                 return true;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        executeActionSubject.onNext(new PrevWordAction());
     }
 
     private void checkPermissionAndExecute(io.reactivex.functions.Action action) {
@@ -199,6 +207,7 @@ public class MainActivity extends ViewActivity<MainViewModel> {
             toLanguageIx = ix;
             refreshToButton();
         }
+        getViewModel().setTranslationMode(fromLanguageIx, toLanguageIx);
         getViewModel().refreshSuggestion();
     }
 
@@ -216,6 +225,7 @@ public class MainActivity extends ViewActivity<MainViewModel> {
             fromLanguageIx = ix;
             refreshFromButton();
         }
+        getViewModel().setTranslationMode(fromLanguageIx, toLanguageIx);
         getViewModel().refreshSuggestion();
     }
 
@@ -225,6 +235,7 @@ public class MainActivity extends ViewActivity<MainViewModel> {
         toLanguageIx = tmp;
         refreshFromButton();
         refreshToButton();
+        getViewModel().setTranslationMode(fromLanguageIx, toLanguageIx);
         getViewModel().refreshSuggestion();
     }
 
@@ -235,12 +246,10 @@ public class MainActivity extends ViewActivity<MainViewModel> {
 
     private void refreshFromButton() {
         binding.btFrom.setImageDrawable(getResources().getDrawable(LANG_ORDER[fromLanguageIx], null));
-        getViewModel().setFromLanguageIx(fromLanguageIx);
     }
 
     private void refreshToButton() {
         binding.btTo.setImageDrawable(getResources().getDrawable(LANG_ORDER[toLanguageIx], null));
-        getViewModel().setToLanguageIx(toLanguageIx);
     }
 
     public static void hideSoftKeyboard(Activity activity) {
@@ -257,7 +266,7 @@ public class MainActivity extends ViewActivity<MainViewModel> {
     }
 
     public void onError(Throwable thr) {
-        executeActionSubject.onNext(new ShowToastAction(thr.getLocalizedMessage() != null ? thr.getLocalizedMessage() : "null"));
+        executeActionSubject.onNext(new ShowToastAction(thr.getLocalizedMessage() != null ? thr.getLocalizedMessage() : thr.getClass().getName()));
         Log.e(getClass().getName(), thr.getLocalizedMessage(), thr);
     }
 

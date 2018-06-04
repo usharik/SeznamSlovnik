@@ -58,6 +58,14 @@ public class TranslationTextView extends android.support.v7.widget.AppCompatText
         return res;
     }
 
+    public boolean isWordSelected() {
+        return translations != null && translations.size() > 0 && selected != -1;
+    }
+
+    public String getSelectedWord() {
+        return translations.get(selected);
+    }
+
     private static String concatListWithWordMapping(List<String> list, Map<Integer, Pair<Integer, Integer>> wordMap) {
         StringBuilder sb = new StringBuilder();
         int ix=0;

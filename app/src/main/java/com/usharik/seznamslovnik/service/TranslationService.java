@@ -121,7 +121,7 @@ public class TranslationService {
 
     private boolean isOldTranslation(Word word) {
         Date curr = Calendar.getInstance().getTime();
-        return TimeUnit.DAYS.convert(curr.getTime() - word.getLoadDate().getTime(), TimeUnit.MILLISECONDS) >= 7;
+        return TimeUnit.DAYS.convert(curr.getTime() - word.getLoadDate().getTime(), TimeUnit.MILLISECONDS) >= 30;
     }
 
     private long storeTranslation(String word, String langFrom, List<String> translations, String langTo) {

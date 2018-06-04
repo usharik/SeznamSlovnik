@@ -14,12 +14,14 @@ import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import com.usharik.seznamslovnik.MainActivity;
 import com.usharik.seznamslovnik.R;
 import com.usharik.seznamslovnik.UrlRepository;
 import com.usharik.seznamslovnik.action.Action;
 import com.usharik.seznamslovnik.action.DeclensionAction;
 import com.usharik.seznamslovnik.action.OpenUrlInBrowserAction;
 import com.usharik.seznamslovnik.action.ShowToastAction;
+import com.usharik.seznamslovnik.action.TranslateWordAction;
 import com.usharik.seznamslovnik.service.TranslationService;
 import com.usharik.seznamslovnik.widget.TranslationTextView;
 
@@ -39,8 +41,8 @@ public class TranslationListAdapter extends RecyclerView.Adapter<TranslationList
     private final Vibrator vibrator;
     private final PublishSubject<Action> executeActionSubject;
     private final Resources resources;
-    private final String langFrom;
-    private final String langTo;
+    private final int langFromIx;
+    private final int langToIx;
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -58,16 +60,16 @@ public class TranslationListAdapter extends RecyclerView.Adapter<TranslationList
                                   final Vibrator vibrator,
                                   final PublishSubject<Action> executeActionSubject,
                                   final Resources resources,
-                                  final String langFrom,
-                                  final String langTo) {
+                                  final int langFromIx,
+                                  final int langToIx) {
         this.suggestList = suggestList;
         this.translationService = translationService;
         this.clipboardManager = clipboardManager;
         this.vibrator = vibrator;
         this.executeActionSubject = executeActionSubject;
         this.resources = resources;
-        this.langFrom = langFrom;
-        this.langTo = langTo;
+        this.langFromIx = langFromIx;
+        this.langToIx = langToIx;
         this.translations = new HashMap<>();
     }
 
@@ -96,7 +98,9 @@ public class TranslationListAdapter extends RecyclerView.Adapter<TranslationList
             tvGender.setText(result.getGender());
             return;
         }
-        translationService.translate(suggestList.get(position), langFrom, langTo)
+        translationService.translate(suggestList.get(position),
+                MainActivity.LANG_ORDER_STR[langFromIx],
+                MainActivity.LANG_ORDER_STR[langToIx])
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         result -> {
@@ -142,12 +146,16 @@ public class TranslationListAdapter extends RecyclerView.Adapter<TranslationList
         Context wrapper = new ContextThemeWrapper(view.getContext(), R.style.PopupMenu);
         PopupMenu popup = new PopupMenu(wrapper, view.findViewById(R.id.optionsMenuButton));
         popup.inflate(R.menu.translation_options_menu);
-        popup.getMenu().findItem(R.id.additionalInfo).setVisible(langFrom.equals("cz"));
+        popup.getMenu().findItem(R.id.additionalInfo).setVisible(langFromIx == MainActivity.CZ_INDEX);
         popup.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.openInBrowser: {
                     int position = (Integer) ((View) view.getParent()).getTag();
-                    executeActionSubject.onNext(new OpenUrlInBrowserAction(String.format("%s%s-%s?q=%s", UrlRepository.SEZNAM_TRANSLATE, langFrom, langTo, suggestList.get(position))));
+                    executeActionSubject.onNext(new OpenUrlInBrowserAction(String.format("%s%s-%s?q=%s",
+                            UrlRepository.SEZNAM_TRANSLATE,
+                            MainActivity.LANG_ORDER_STR[langFromIx],
+                            MainActivity.LANG_ORDER_STR[langToIx],
+                            suggestList.get(position))));
                     break;
                 }
                 case R.id.additionalInfo: {
@@ -160,6 +168,12 @@ public class TranslationListAdapter extends RecyclerView.Adapter<TranslationList
                     executeActionSubject.onNext(new OpenUrlInBrowserAction(String.format("%s%s", UrlRepository.DICT_COM, suggestList.get(position))));
                     break;
                 }
+                case R.id.translateBack:
+                    TranslationTextView tvTranslation = ((View) view.getParent()).findViewById(R.id.translations);
+                    if (tvTranslation.isWordSelected()) {
+                        executeActionSubject.onNext(new TranslateWordAction(tvTranslation.getSelectedWord(), langToIx, langFromIx));
+                    }
+                    break;
                 case R.id.copyAllToClipboard:
                     break;
                 case R.id.editTranslation:

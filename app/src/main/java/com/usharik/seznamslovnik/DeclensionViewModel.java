@@ -48,7 +48,7 @@ public class DeclensionViewModel extends ViewModelObservable {
     }
 
     public Observable< RecyclerView.Adapter> getAdapter() {
-        return Observable.fromCallable(() -> prepareWordFormsAdapter(appState.word));
+        return Observable.fromCallable(() -> prepareWordFormsAdapter(appState.wordForDeclension));
     }
 
     private RecyclerView.Adapter prepareWordFormsAdapter(String word) {
@@ -143,7 +143,7 @@ public class DeclensionViewModel extends ViewModelObservable {
 
     @Bindable
     public String getLink() {
-        return String.format("%s?slovo=%s", UrlRepository.PRIRUCKA_UJC_CAS, appState.word);
+        return String.format("%s?slovo=%s", UrlRepository.PRIRUCKA_UJC_CAS, appState.getWord());
     }
 
     @Bindable
