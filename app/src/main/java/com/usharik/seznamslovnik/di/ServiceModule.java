@@ -83,8 +83,9 @@ class ServiceModule {
                                                  AppState appState,
                                                  @Named("seznamRetrofit") Retrofit seznamRetrofit,
                                                  @Named("seznamSuggestRetrofit") Retrofit seznamSuggestionRetrofit,
+                                                 NetworkService networkService,
                                                  PublishSubject<Action> executeActionSubject) {
-        return new TranslationService(databaseManager, appState, seznamRetrofit, seznamSuggestionRetrofit, executeActionSubject);
+        return new TranslationService(databaseManager, appState, seznamRetrofit, seznamSuggestionRetrofit, networkService, executeActionSubject);
     }
 
     @Provides

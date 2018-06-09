@@ -131,8 +131,7 @@ public class MainViewModel extends ViewModelObservable {
         disposables.add(translationService.getSuggestions(appState.getWord(),
                 langFrom,
                 langTo,
-                appState.suggestionCount,
-                !networkService.isNetworkConnected() || isOfflineMode()
+                appState.suggestionCount
         )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

@@ -43,17 +43,20 @@ public class TranslationService {
     private final AppState appState;
     private final Retrofit seznamRetrofit;
     private final Retrofit seznamSuggestRetrofit;
+    private NetworkService networkService;
     private final PublishSubject<Action> executeActionSubject;
 
     public TranslationService(final DatabaseManager databaseManager,
                               final AppState appState,
                               final Retrofit seznamRetrofit,
                               final Retrofit seznamSuggestRetrofit,
+                              final NetworkService networkService,
                               final PublishSubject<Action> executeActionSubject) {
         this.databaseManager = databaseManager;
         this.appState = appState;
         this.seznamRetrofit = seznamRetrofit;
         this.seznamSuggestRetrofit = seznamSuggestRetrofit;
+        this.networkService = networkService;
         this.executeActionSubject = executeActionSubject;
     }
 
@@ -61,8 +64,8 @@ public class TranslationService {
         return databaseManager.getActiveDbInstance().translationStorageDao();
     }
 
-    public Maybe<List<String>> getSuggestions(String template, String langFrom, String langTo, int limit, boolean isOffline) {
-        if (isOffline) {
+    public Maybe<List<String>> getSuggestions(String template, String langFrom, String langTo, int limit) {
+        if (!networkService.isNetworkConnected() || appState.isOfflineMode) {
             return getOfflineSuggestions(template, langFrom, langTo, 100);
         } else {
             return getOnlineSuggestions(template, langFrom, langTo, limit);
@@ -90,6 +93,7 @@ public class TranslationService {
                     }
                     return Observable.just(sgList);
                 })
+                .onErrorResumeNext(getOfflineSuggestions(template, langFrom, langTo, 100).toObservable())
                 .firstElement();
     }
 
@@ -106,7 +110,7 @@ public class TranslationService {
     private Maybe<TranslationResult> getActualOfflineTranslation(String question, String langFrom, String langTo) {
         return getDao().getWord(question, langFrom)
                 .flatMap(word -> {
-                    if (isOldTranslation(word) && !appState.isOfflineMode) {
+                    if (isOldTranslation(word) && !appState.isOfflineMode && networkService.isNetworkConnected()) {
                         return Maybe.empty();
                     } else {
                         return getDao()
@@ -207,19 +211,5 @@ public class TranslationService {
             word.append(" ");
         }
         return result;
-    }
-
-    private static class Wrapper {
-        final String word;
-        final String langFrom;
-        final List<String> translations;
-        final String langTo;
-
-        Wrapper(String word, String langFrom, List<String> translations, String langTo) {
-            this.word = word;
-            this.langFrom = langFrom;
-            this.langTo = langTo;
-            this.translations = translations;
-        }
     }
 }
