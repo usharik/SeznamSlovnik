@@ -19,13 +19,15 @@ public class ProxyDialogViewModel extends ViewModelObservable {
 
     private static List<ProxyInfo> buildProxyList() {
         List<ProxyInfo> proxyList = new ArrayList<>();
-        proxyList.add(new ProxyInfo("110.77.238.43", 42619));
-        proxyList.add(new ProxyInfo("91.212.217.27",8085));
+
+        proxyList.add(new ProxyInfo("217.61.14.215", 3128));
+        proxyList.add(new ProxyInfo("179.43.141.201",3128));
         proxyList.add(new ProxyInfo("109.248.156.65",8080));
         proxyList.add(new ProxyInfo("174.138.54.49", 3128));
         proxyList.add(new ProxyInfo("175.106.14.138", 8181));
         proxyList.add(new ProxyInfo("165.16.81.144", 8080));
         proxyList.add(new ProxyInfo("188.166.83.17", 3128));
+        proxyList.add(new ProxyInfo("195.201.97.32", 8888));
         return proxyList;
     }
 

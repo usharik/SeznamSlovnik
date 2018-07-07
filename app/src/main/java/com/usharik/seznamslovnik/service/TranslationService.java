@@ -115,10 +115,15 @@ public class TranslationService {
                     } else {
                         return getDao()
                                 .getTranslations(question, langFrom, langTo, 1000)
-                                .flatMap(list -> Maybe.just(new TranslationResult(
-                                        question,
-                                        list,
-                                        getDao().getWordGender(word.getId()))));
+                                .flatMap(list -> {
+                                    if (list.size() == 0) {
+                                        return Maybe.empty();
+                                    }
+                                    return Maybe.just(new TranslationResult(
+                                            question,
+                                            list,
+                                            getDao().getWordGender(word.getId())));
+                                });
                     }
                 });
     }

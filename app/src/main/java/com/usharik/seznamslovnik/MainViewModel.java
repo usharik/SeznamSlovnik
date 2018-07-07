@@ -94,7 +94,7 @@ public class MainViewModel extends ViewModelObservable {
     }
 
     public void refreshSuggestion() {
-        onTextChanged(getWord(), 0, 0, 0);
+        refreshSuggestion(false);
     }
 
     public Observable<TranslationListAdapter> getAnswerPublishSubject() {
@@ -121,7 +121,11 @@ public class MainViewModel extends ViewModelObservable {
             return;
         }
         appState.setWord(s.toString().trim());
-        if (appState.getWord().isEmpty()) {
+        refreshSuggestion(true);
+    }
+
+    private void refreshSuggestion(boolean resetScrollPosition) {
+        if (appState.getWord() == null || appState.getWord().isEmpty()) {
             return;
         }
         String langFrom = LANG_ORDER_STR[appState.getFromLanguageIx()];
@@ -132,20 +136,22 @@ public class MainViewModel extends ViewModelObservable {
                 langFrom,
                 langTo,
                 appState.suggestionCount
-        )
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        strings -> {
-                            scrollPosition = 0;
-                            adapter = new TranslationListAdapter(strings, translationService, clipboardManager, vibrator,
-                                    executeActionSubject, resources, appState.getFromLanguageIx(), appState.getToLanguageIx());
-                            answerPublishSubject.onNext(adapter);
-                        },
-                        thr -> {
-                            Log.e(getClass().getName(), thr.getLocalizedMessage(), thr);
-                            executeActionSubject.onNext(new ShowToastAction(thr.getLocalizedMessage()));
-                        })
+                )
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                strings -> {
+                                    if (resetScrollPosition) {
+                                        scrollPosition = 0;
+                                    }
+                                    adapter = new TranslationListAdapter(strings, translationService, clipboardManager, vibrator,
+                                            executeActionSubject, resources, appState.getFromLanguageIx(), appState.getToLanguageIx());
+                                    answerPublishSubject.onNext(adapter);
+                                },
+                                thr -> {
+                                    Log.e(getClass().getName(), thr.getLocalizedMessage(), thr);
+                                    executeActionSubject.onNext(new ShowToastAction(thr.getLocalizedMessage()));
+                                })
         );
     }
 

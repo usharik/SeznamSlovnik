@@ -42,3 +42,5 @@ where info like 'rod:%'
   and word_id = 25447
 order by word_id
 --limit 1
+
+select * from CASES_OF_NOUN where word_id = 25220

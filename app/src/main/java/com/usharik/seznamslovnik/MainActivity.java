@@ -68,7 +68,6 @@ public class MainActivity extends ViewActivity<MainViewModel> {
         binding.setViewModel(getViewModel());
         binding.myRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         binding.myRecyclerView.setAdapter(getViewModel().getAdapter());
-        binding.myRecyclerView.getLayoutManager().scrollToPosition(getViewModel().getScrollPosition());
         fromLanguageIx = getViewModel().getFromLanguageIx();
         toLanguageIx = getViewModel().getToLanguageIx();
         binding.btFrom.setImageDrawable(getResources().getDrawable(LANG_ORDER[fromLanguageIx], null));
@@ -78,7 +77,10 @@ public class MainActivity extends ViewActivity<MainViewModel> {
             return view.performClick();
         });
 
-        compositeDisposable.add(getViewModel().getAnswerPublishSubject().subscribe(adapter -> binding.myRecyclerView.setAdapter(adapter)));
+        compositeDisposable.add(getViewModel().getAnswerPublishSubject().subscribe(adapter -> {
+            binding.myRecyclerView.setAdapter(adapter);
+            binding.myRecyclerView.getLayoutManager().scrollToPosition(getViewModel().getScrollPosition());
+        }));
         if (!isDictLoadingInProgress) {
             checkPermissionAndExecute(this::loadDictionaryFromUrl);
         }
@@ -98,7 +100,8 @@ public class MainActivity extends ViewActivity<MainViewModel> {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .compose(WaitDialogManager.showForCompletable(getSupportFragmentManager()))
-                .subscribe(() -> { }, this::onError);
+                .subscribe(() -> {
+                }, this::onError);
     }
 
     @Override
@@ -258,7 +261,8 @@ public class MainActivity extends ViewActivity<MainViewModel> {
         }
         InputMethodManager inputMethodManager =
                 (InputMethodManager) activity.getSystemService(
-                        Activity.INPUT_METHOD_SERVICE);if (inputMethodManager == null) {
+                        Activity.INPUT_METHOD_SERVICE);
+        if (inputMethodManager == null) {
             return;
         }
         inputMethodManager.hideSoftInputFromWindow(
