@@ -143,7 +143,7 @@ public class DeclensionViewModel extends ViewModelObservable {
 
     @Bindable
     public String getLink() {
-        return String.format("%s?slovo=%s", UrlRepository.PRIRUCKA_UJC_CAS, appState.getWord());
+        return String.format("%s?slovo=%s", UrlRepository.PRIRUCKA_UJC_CAS, appState.wordForDeclension);
     }
 
     @Bindable
