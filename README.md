@@ -5,7 +5,10 @@
 
 Scan QR code with your mobile device to install application
 
-![qr_code](https://user-images.githubusercontent.com/15856751/41002938-7c82d374-6915-11e8-93a8-dabcff24b120.png)
+![slovnik-qr-code](https://user-images.githubusercontent.com/15856751/46904469-d4089e00-cee4-11e8-97f2-f57e7c07126c.png)
+
+Or use this link to download apk
+https://github.com/usharik/SeznamSlovnik/releases/download/1.1-RC/app-release.apk
 
 <img width="284" alt="seznam_slovnik" src="https://user-images.githubusercontent.com/15856751/37434861-6447fa20-27e1-11e8-94bc-eb88a1c972a8.png">
 
