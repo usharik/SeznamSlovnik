@@ -43,7 +43,7 @@ public class TranslationService {
     private final AppState appState;
     private final Retrofit seznamRetrofit;
     private final Retrofit seznamSuggestRetrofit;
-    private NetworkService networkService;
+    private final NetworkService networkService;
     private final PublishSubject<Action> executeActionSubject;
 
     public TranslationService(final DatabaseManager databaseManager,
@@ -137,7 +137,7 @@ public class TranslationService {
         return getDao().insertTranslationsForWord(word, langFrom, translations, langTo);
     }
 
-    private Maybe<TranslationResult> getOnlineTranslation(String question, String langFrom, String langTo) {
+    Maybe<TranslationResult> getOnlineTranslation(String question, String langFrom, String langTo) {
         if (appState.isOfflineMode) {
             return Maybe.empty();
         }
@@ -201,19 +201,26 @@ public class TranslationService {
     private static List<String> extractTranslations(Elements translations) {
         List<String> result = new ArrayList<>();
         StringBuilder word = new StringBuilder();
-        for (Element el : translations) {
-            if (el.tag().getName().equals("br") || (el.tag().getName().equals("span") && el.hasClass("comma"))) {
-                if (word.length() > 0) {
-                    if (word.length() > 0) {
-                        word.delete(word.length() - 1, word.length());
+        for (Element td : translations.select("td")) {
+            for (Element el : td.children()) {
+                if (el.tag().getName().equals("br") || el == el.lastElementSibling() || (el.tag().getName().equals("span") && el.hasClass("comma"))) {
+                    if (el == el.lastElementSibling()) {
+                        word.append(el.text());
+                        word.append(" ");
                     }
-                    result.add(word.toString());
+                    if (word.length() > 0) {
+                        result.add(word.toString().trim());
+                    }
+                    word = new StringBuilder();
+                    continue;
                 }
-                word = new StringBuilder();
-                continue;
+                word.append(el.text());
+                word.append(" ");
             }
-            word.append(el.text());
-            word.append(" ");
+            if (word.length() > 0) {
+                result.add(word.toString().trim());
+                word = new StringBuilder();
+            }
         }
         return result;
     }

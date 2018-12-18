@@ -33,7 +33,7 @@ android {
     sourceSets {
         androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
     }
-    buildToolsVersion '28.0.2'
+    buildToolsVersion '28.0.3'
 }
 
 configurations {
@@ -63,7 +63,7 @@ dependencies {
     implementation 'android.arch.persistence.room:runtime:1.1.1'
     implementation 'android.arch.persistence.room:rxjava2:1.1.1'
     implementation 'org.apache.commons:commons-lang3:3.6'
-    implementation 'com.google.firebase:firebase-core:16.0.3'
+    implementation 'com.google.firebase:firebase-core:16.0.6'
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.mockito:mockito-all:1.8.4'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
