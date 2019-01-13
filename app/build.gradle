@@ -6,8 +6,8 @@ android {
         applicationId "com.usharik.seznamslovnik"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 11
-        versionName "1.1-RC"
+        versionCode 101
+        versionName "1.01"
         buildConfigField "long", "TIMESTAMP", System.currentTimeMillis() + "L"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -64,6 +64,8 @@ dependencies {
     implementation 'android.arch.persistence.room:rxjava2:1.1.1'
     implementation 'org.apache.commons:commons-lang3:3.6'
     implementation 'com.google.firebase:firebase-core:16.0.6'
+    implementation 'com.google.firebase:firebase-messaging:17.3.4'
+    implementation 'com.google.firebase:firebase-config:16.1.2'
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.mockito:mockito-all:1.8.4'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

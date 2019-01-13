@@ -2,6 +2,7 @@ package com.usharik.seznamslovnik;
 
 import android.app.Activity;
 import android.app.Application;
+import android.app.Service;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
@@ -26,8 +27,10 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasActivityInjector;
+import dagger.android.HasServiceInjector;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.subjects.PublishSubject;
@@ -36,10 +39,13 @@ import io.reactivex.subjects.PublishSubject;
  * Created by macbook on 08.02.18.
  */
 
-public class App extends Application implements HasActivityInjector {
+public class App extends Application implements HasActivityInjector, HasServiceInjector {
 
     @Inject
     DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
+
+    @Inject
+    DispatchingAndroidInjector<Service> dispatchingServiceInjector;
 
     @Inject
     PublishSubject<Action> executeActionSubject;
@@ -153,5 +159,10 @@ public class App extends Application implements HasActivityInjector {
     @Override
     public DispatchingAndroidInjector<Activity> activityInjector() {
         return dispatchingAndroidInjector;
+    }
+
+    @Override
+    public AndroidInjector<Service> serviceInjector() {
+        return dispatchingServiceInjector;
     }
 }

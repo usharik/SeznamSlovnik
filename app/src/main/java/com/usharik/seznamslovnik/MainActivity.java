@@ -2,9 +2,12 @@ package com.usharik.seznamslovnik;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
+import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.Menu;
@@ -23,7 +26,11 @@ import com.usharik.seznamslovnik.action.ShowToastAction;
 import com.usharik.seznamslovnik.dao.DatabaseManager;
 import com.usharik.seznamslovnik.databinding.ActivityMainBinding;
 import com.usharik.seznamslovnik.framework.ViewActivity;
+import com.usharik.seznamslovnik.service.RemoteConfigService;
 import com.usharik.seznamslovnik.util.WaitDialogManager;
+
+import java.io.File;
+import java.io.IOException;
 
 import javax.inject.Inject;
 
@@ -32,6 +39,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
+
+import static com.usharik.seznamslovnik.util.IOUtils.downloadFromUrl;
 
 public class MainActivity extends ViewActivity<MainViewModel> {
 
@@ -46,6 +55,9 @@ public class MainActivity extends ViewActivity<MainViewModel> {
 
     @Inject
     DatabaseManager databaseManager;
+
+    @Inject
+    RemoteConfigService remoteConfigService;
 
     private ActivityMainBinding binding;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
@@ -84,6 +96,9 @@ public class MainActivity extends ViewActivity<MainViewModel> {
         if (!isDictLoadingInProgress) {
             checkPermissionAndExecute(this::loadDictionaryFromUrl);
         }
+
+        remoteConfigService.fetchConfiguration(this);
+
         getViewModel().refreshSuggestion();
     }
 
@@ -125,6 +140,14 @@ public class MainActivity extends ViewActivity<MainViewModel> {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem register = menu.findItem(R.id.new_version);
+        RemoteConfigService.VersionInfo versionInfo = remoteConfigService.getVersionInfo();
+        register.setVisible(versionInfo.versionCode != null && versionInfo.versionCode > BuildConfig.VERSION_CODE);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.backup:
@@ -132,6 +155,31 @@ public class MainActivity extends ViewActivity<MainViewModel> {
                 return true;
             case R.id.restore:
                 checkPermissionAndExecute(() -> executeActionSubject.onNext(new RestoreDictionaryAction()));
+                return true;
+            case R.id.new_version:
+                RemoteConfigService.VersionInfo versionInfo = remoteConfigService.getVersionInfo();
+                File file;
+                try {
+                    file = File.createTempFile("new_version", ".apk", getExternalCacheDir());
+                } catch (IOException e) {
+                    Log.e(getClass().getName(), "Can't create temp file to download apk", e);
+                    return true;
+                }
+                Uri apkURI = FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".provider", file);
+
+                Completable.fromAction(() -> downloadFromUrl(versionInfo.versionApkUrl, file))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .andThen(Completable.fromAction(() -> {
+                            Intent intent = new Intent(Intent.ACTION_VIEW);
+                            intent.setDataAndType(apkURI, "application/vnd.android.package-archive");
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                            startActivity(intent);
+                        }))
+                        .subscribe(
+                                () -> Log.i(getClass().getName(), "Completed"),
+                                thr -> Log.e(getClass().getName(), "Error", thr));
+
                 return true;
             default:
                 return true;

@@ -3,6 +3,7 @@ package com.usharik.seznamslovnik.di;
 import com.usharik.seznamslovnik.DeclensionActivity;
 import com.usharik.seznamslovnik.MainActivity;
 import com.usharik.seznamslovnik.dialog.ProxyDialog;
+import com.usharik.seznamslovnik.service.message.SlovnikFirebaseMessagingService;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -21,4 +22,7 @@ public abstract class ActivityModule {
 
     @ContributesAndroidInjector
     abstract ProxyDialog contributeProxyDialog();
+
+    @ContributesAndroidInjector
+    abstract SlovnikFirebaseMessagingService slovnikFirebaseMessagingService();
 }

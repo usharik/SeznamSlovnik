@@ -7,11 +7,13 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Vibrator;
 
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.usharik.seznamslovnik.AppState;
 import com.usharik.seznamslovnik.UrlRepository;
 import com.usharik.seznamslovnik.action.Action;
 import com.usharik.seznamslovnik.dao.DatabaseManager;
+import com.usharik.seznamslovnik.service.RemoteConfigService;
 import com.usharik.seznamslovnik.service.TranslationService;
 import com.usharik.seznamslovnik.service.NetworkService;
 import com.usharik.seznamslovnik.service.WordInfoService;
@@ -128,5 +130,17 @@ class ServiceModule {
     @Singleton
     SharedPreferences provideSharedPreferences(Application application) {
         return application.getSharedPreferences("seznam_slovnik.prefences", Context.MODE_PRIVATE);
+    }
+
+    @Provides
+    @Singleton
+    FirebaseRemoteConfig firebaseRemoteConfig() {
+        return FirebaseRemoteConfig.getInstance();
+    }
+
+    @Provides
+    @Singleton
+    RemoteConfigService remoteConfigService(FirebaseRemoteConfig firebaseRemoteConfig) {
+        return new RemoteConfigService(firebaseRemoteConfig);
     }
 }
