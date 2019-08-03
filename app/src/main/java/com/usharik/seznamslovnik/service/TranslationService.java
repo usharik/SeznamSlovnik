@@ -122,10 +122,14 @@ public class TranslationService {
                                     if (list.size() == 0) {
                                         return Maybe.empty();
                                     }
-                                    return Maybe.just(new TranslationResult(
+                                    TranslationResult translationResult = new TranslationResult(
                                             question,
                                             list,
-                                            getDao().getWordGender(word.getId())));
+                                            getDao().getWordGender(word.getId()));
+                                    if (StringUtils.isNotEmpty(word.getJson())) {
+                                        translationResult.setAnswer(new Gson().fromJson(word.getJson(), Answer.class));
+                                    }
+                                    return Maybe.just(translationResult);
                                 });
                     }
                 });

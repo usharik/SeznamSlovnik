@@ -50,7 +50,7 @@ public class TranslationServiceAndroidTest {
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         databaseManager = new DatabaseManager(appContext);
         networkService = mock(NetworkService.class);
-        appState = mock(AppState.class);
+        appState =new AppState();
         executeActionSubject = PublishSubject.create();
         translationService = new TranslationService(databaseManager, appState, provideSeznamRetrofit(),
                 provideSeznamSuggestRetrofit(), networkService, executeActionSubject);
@@ -67,6 +67,7 @@ public class TranslationServiceAndroidTest {
     @Test
     public void testTranslationAle() {
         String word = "ale";
+        appState.isOfflineMode = false;
         TranslationResult translationResult = translationService.translate(word, "cz", "ru").blockingGet();
 
         Word wordObj = translationStorageDao.getWord(word, "cz").blockingGet();
@@ -76,6 +77,11 @@ public class TranslationServiceAndroidTest {
         assertEquals(word, wordObj.getWord());
         assertNotNull(wordObj.getJson());
         assertTrue(wordObj.getJson().length() > 0);
+
+        appState.isOfflineMode = true;
+        translationResult = translationService.translate(word, "cz", "ru").blockingGet();
+
+        assertNotNull(translationResult);
     }
 
     @Test
