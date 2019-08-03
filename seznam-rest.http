@@ -1,0 +1,9 @@
+GET https://slovnik.seznam.cz/api/slovnik?dictionary=cz_ru&query=ucho
+Accept: application/json
+
+###
+
+GET https://suggest.seznam.cz/slovnik/cz_ru?phrase=al&format=json-2&highlight=1&count=6
+Accept: application/json
+
+###

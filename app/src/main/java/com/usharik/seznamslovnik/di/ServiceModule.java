@@ -47,6 +47,7 @@ class ServiceModule {
     Retrofit provideSeznamRetrofit() {
         return new Retrofit.Builder()
                 .baseUrl(UrlRepository.SEZNAM_TRANSLATE)
+                .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
     }
@@ -57,6 +58,7 @@ class ServiceModule {
     Retrofit provideSeznamSuggestRetrofit() {
         return new Retrofit.Builder()
                 .baseUrl(UrlRepository.SEZNAM_SUGGEST)
+                .addConverterFactory(GsonConverterFactory.create())
                 .addConverterFactory(SimpleXmlConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();

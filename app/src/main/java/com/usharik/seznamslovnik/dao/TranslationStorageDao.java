@@ -1,10 +1,10 @@
 package com.usharik.seznamslovnik.dao;
 
-import android.arch.persistence.room.Dao;
-import android.arch.persistence.room.Insert;
-import android.arch.persistence.room.OnConflictStrategy;
-import android.arch.persistence.room.Query;
-import android.arch.persistence.room.Transaction;
+import androidx.room.Dao;
+import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
+import androidx.room.Query;
+import androidx.room.Transaction;
 
 import com.usharik.seznamslovnik.dao.entity.CasesOfNoun;
 import com.usharik.seznamslovnik.dao.entity.FormsOfVerb;
@@ -108,12 +108,22 @@ public abstract class TranslationStorageDao {
             "where B.word = :word ")
     public abstract List<String> getWordInfo(String word);
 
+    @Query("select 1 " +
+            " from WORD as A" +
+            " where A.id = :wordId" +
+            "   and A.json is not null " +
+            "   and A.json != ''")
+    public abstract int isJsonExists(long wordId);
+
     @Transaction
-    public long insertTranslationsForWord(String request, String langFrom, List<String> translations, String langTo) {
+    public long insertTranslationsForWord(String request, String langFrom, List<String> translations, String langTo, String json) {
         Long wordId = getWordId(request, langFrom);
         if (wordId == null) {
-            wordId = insertWord(new Word(request, StringUtils.stripAccents(request), langFrom));
+            wordId = insertWord(new Word(request, StringUtils.stripAccents(request), langFrom, json));
         } else {
+            if (isJsonExists(wordId) != 1) {
+                updateWordJson(wordId, json);
+            }
             updateWordLoadDate(wordId, Calendar.getInstance().getTime());
         }
         for (String translation : translations) {
@@ -129,7 +139,12 @@ public abstract class TranslationStorageDao {
     @Query("update WORD " +
             "  set load_date = :loadDate " +
             "where id = :id")
-    public abstract long updateWordLoadDate(long id, Date loadDate);
+    public abstract void updateWordLoadDate(long id, Date loadDate);
+
+    @Query("update WORD " +
+            "  set json = :json " +
+            "where id = :id")
+    public abstract void updateWordJson(long id, String json);
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     public abstract long insertWord(Word word);

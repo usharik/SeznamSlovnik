@@ -14,7 +14,7 @@ import java.util.Map;
  * Created by au185034 on 12/03/2018.
  */
 
-public class TranslationTextView extends android.support.v7.widget.AppCompatTextView {
+public class TranslationTextView extends androidx.appcompat.widget.AppCompatTextView {
 
     private List<String> translations;
     private String text;

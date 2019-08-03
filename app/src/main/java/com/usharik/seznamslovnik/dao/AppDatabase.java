@@ -1,11 +1,12 @@
 package com.usharik.seznamslovnik.dao;
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
-import android.arch.persistence.room.Database;
-import android.arch.persistence.room.Room;
-import android.arch.persistence.room.RoomDatabase;
-import android.arch.persistence.room.TypeConverters;
-import android.arch.persistence.room.migration.Migration;
+import androidx.annotation.NonNull;
+import androidx.sqlite.db.SupportSQLiteDatabase;
+import androidx.room.Database;
+import androidx.room.Room;
+import androidx.room.RoomDatabase;
+import androidx.room.TypeConverters;
+import androidx.room.migration.Migration;
 import android.content.Context;
 import android.database.Cursor;
 
@@ -29,7 +30,7 @@ import java.util.Calendar;
                 FormsOfVerb.class,
                 WordInfo.class
         },
-        version = 7
+        version = 8
 )
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
@@ -45,6 +46,7 @@ public abstract class AppDatabase extends RoomDatabase {
                 .addMigrations(MIGRATION_4_5)
                 .addMigrations(MIGRATION_5_6)
                 .addMigrations(MIGRATION_6_7)
+                .addMigrations(MIGRATION_7_8)
                 .build();
     }
 
@@ -130,6 +132,13 @@ public abstract class AppDatabase extends RoomDatabase {
                     "FOREIGN KEY(`word_id`) REFERENCES `WORD`(`id`) ON UPDATE RESTRICT ON DELETE CASCADE )");
             database.execSQL("CREATE INDEX `index_FORMS_OF_VERB_word_id` ON `FORMS_OF_VERB` (`word_id`)");
             database.execSQL("CREATE UNIQUE INDEX `index_FORMS_OF_VERB_word_id_form_num_number` ON `FORMS_OF_VERB` (`word_id`, `form_num`, `number`)");
+        }
+    };
+
+    static final Migration MIGRATION_7_8 = new Migration(7, 8) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE `WORD` ADD COLUMN `json` TEXT");
         }
     };
 }

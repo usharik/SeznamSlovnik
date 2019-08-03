@@ -1,9 +1,9 @@
 package com.usharik.seznamslovnik.framework;
 
-import android.arch.lifecycle.ViewModel;
-import android.databinding.Bindable;
-import android.databinding.Observable;
-import android.databinding.PropertyChangeRegistry;
+import androidx.lifecycle.ViewModel;
+import androidx.databinding.Bindable;
+import androidx.databinding.Observable;
+import androidx.databinding.PropertyChangeRegistry;
 
 /**
  * Created by macbook on 11.02.18.

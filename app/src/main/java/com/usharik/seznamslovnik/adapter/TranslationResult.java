@@ -1,5 +1,7 @@
 package com.usharik.seznamslovnik.adapter;
 
+import com.usharik.seznamslovnik.model.json.slovnik.Answer;
+
 import java.util.List;
 
 public class TranslationResult {
@@ -8,6 +10,8 @@ public class TranslationResult {
     private String word;
     private List<String> translations;
     private String gender;
+    private String jsonAnswer;
+    private Answer answer;
 
     public TranslationResult(String word, List<String> translations, String gender) {
         this.word = word;
@@ -15,10 +19,12 @@ public class TranslationResult {
         this.gender = gender != null ? gender : "";
     }
 
-    public TranslationResult(String word, List<String> translations) {
+    public TranslationResult(String word, List<String> translations, String jsonAnswer, Answer answer) {
         this.word = word;
         this.translations = translations;
         this.gender = "";
+        this.jsonAnswer = jsonAnswer;
+        this.answer = answer;
     }
 
     public long getWordId() {
@@ -39,5 +45,21 @@ public class TranslationResult {
 
     public void setGender(String gender) {
         this.gender = gender;
+    }
+
+    public String getJsonAnswer() {
+        return jsonAnswer;
+    }
+
+    public void setJsonAnswer(String jsonAnswer) {
+        this.jsonAnswer = jsonAnswer;
+    }
+
+    public Answer getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(Answer answer) {
+        this.answer = answer;
     }
 }

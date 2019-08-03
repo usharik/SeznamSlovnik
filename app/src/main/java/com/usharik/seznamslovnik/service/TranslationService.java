@@ -1,26 +1,26 @@
 package com.usharik.seznamslovnik.service;
 
-import android.util.Log;
-
+import com.google.gson.Gson;
 import com.usharik.seznamslovnik.AppState;
 import com.usharik.seznamslovnik.action.Action;
-import com.usharik.seznamslovnik.action.ShowToastAction;
 import com.usharik.seznamslovnik.adapter.TranslationResult;
 import com.usharik.seznamslovnik.dao.DatabaseManager;
 import com.usharik.seznamslovnik.dao.TranslationStorageDao;
 import com.usharik.seznamslovnik.dao.entity.Word;
-import com.usharik.seznamslovnik.model.xml.Result;
 
+import com.usharik.seznamslovnik.model.json.slovnik.Answer;
+import com.usharik.seznamslovnik.model.json.slovnik.Grp;
+import com.usharik.seznamslovnik.model.json.slovnik.Sen;
+import com.usharik.seznamslovnik.model.json.slovnik.Translate;
+import com.usharik.seznamslovnik.model.json.suggest.Result;
+import com.usharik.seznamslovnik.model.json.suggest.Text;
+import okhttp3.ResponseBody;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
-import org.jsoup.select.Elements;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -37,14 +37,13 @@ import retrofit2.Retrofit;
 
 public class TranslationService {
 
-    private static final List<String> EMPTY_STR_LIST = Collections.unmodifiableList(new ArrayList<>());
-
     private final DatabaseManager databaseManager;
     private final AppState appState;
     private final Retrofit seznamRetrofit;
     private final Retrofit seznamSuggestRetrofit;
     private final NetworkService networkService;
     private final PublishSubject<Action> executeActionSubject;
+    private final Gson gson = new Gson();
 
     public TranslationService(final DatabaseManager databaseManager,
                               final AppState appState,
@@ -77,23 +76,27 @@ public class TranslationService {
         return getDao().getSuggestions(StringUtils.stripAccents(trimmed), trimmed, langFrom, langTo, limit);
     }
 
-    private Maybe<List<String>> getOnlineSuggestions(String template, String langFrom, String langTo, int limit) {
+    Maybe<List<String>> getOnlineSuggestions(String template, String langFrom, String langTo, int limit) {
         return seznamSuggestRetrofit.create(SeznamSuggestionInterface.class).doGetSuggestions(
                 langFrom,
                 langTo,
                 template,
-                "xml",
+                "json-2",
                 1,
                 limit)
-                .flatMap(answer -> {
+                .flatMap(suggest -> {
                     List<String> sgList = new ArrayList<>();
                     sgList.add(template);
-                    for (Result.Item item : answer.suggest) {
-                        sgList.add(item.value);
+                    for (Result res : suggest.getResult()) {
+                        StringBuilder sb = new StringBuilder();
+                        for (Text text : res.getText()) {
+                            sb.append(text.getText());
+                        }
+                        sgList.add(sb.toString());
                     }
                     return Observable.just(sgList);
                 })
-                .onErrorResumeNext(getOfflineSuggestions(template, langFrom, langTo, 100).toObservable())
+                .onErrorResumeNext(getOfflineSuggestions(template, langFrom, langTo, limit).toObservable())
                 .firstElement();
     }
 
@@ -133,95 +136,57 @@ public class TranslationService {
         return TimeUnit.DAYS.convert(curr.getTime() - word.getLoadDate().getTime(), TimeUnit.MILLISECONDS) >= 30;
     }
 
-    private long storeTranslation(String word, String langFrom, List<String> translations, String langTo) {
-        return getDao().insertTranslationsForWord(word, langFrom, translations, langTo);
+    private long storeTranslation(String word, String langFrom, List<String> translations, String langTo, String json) {
+        return getDao().insertTranslationsForWord(word, langFrom, translations, langTo, json);
     }
 
     Maybe<TranslationResult> getOnlineTranslation(String question, String langFrom, String langTo) {
         if (appState.isOfflineMode) {
             return Maybe.empty();
         }
-        return seznamRetrofit.create(SeznamRestInterface.class).doTranslate(
-                langFrom,
-                langTo,
-                question)
-                .flatMap(response -> {
-                    TranslationResult translation = parseResponse(question, response.string());
-                    if (translation.getTranslations().size() > 0) {
-                        long wordId = storeTranslation(translation.getWord(), langFrom, translation.getTranslations(), langTo);
-                        translation.setGender(getDao().getWordGender(wordId));
-                    }
-                    return Observable.just(translation);
-                })
+        return seznamRetrofit.create(SeznamRestInterface.class)
+                .doTranslate(langFrom + "_" + langTo, question)
+                .flatMap(response -> parseTranslationJson(response, question, langFrom, langTo))
                 .firstElement();
     }
 
-    private TranslationResult parseResponse(String word, String responseText) {
-        try {
-            Document html = Jsoup.parse(responseText);
-
-            Elements elements1 = html.body().select("div.hgroup > h1");
-            if (elements1.size() > 0) {
-                word = elements1.get(0).text();
-            }
-
-            Elements elements = html.body().select("div#fastMeanings");
-            List<String> transList = EMPTY_STR_LIST;
-            if (elements.size() > 0) {
-                transList = extractTranslations(elements.get(0).children());
-            }
-            if (transList.isEmpty()) {
-                elements = html.body().select("span.arrow");
-                if (elements.size() > 0) {
-                    transList = new ArrayList<>();
-                    for (Element el : elements) {
-                        Node node = el.nextSibling();
-                        if (node == null) {
-                            continue;
+    private Observable<TranslationResult> parseTranslationJson(ResponseBody response, String question, String langFrom, String langTo) throws IOException {
+        String jsonAnswer = response.string();
+        Answer answer = gson.fromJson(jsonAnswer, Answer.class);
+        String phrs = question;
+        List<String> translations = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
+        for (Translate trn : answer.getTranslate()) {
+            phrs = trn.getHead().getPhrs();
+            for (Grp grp : trn.getGrps()) {
+                for (Sen sen : grp.getSens()) {
+                    for (List<String> trns : sen.getTrans()) {
+                        sb = new StringBuilder();
+                        for (String str : trns) {
+                            String word = Jsoup.parse(str).text();
+                            if (word.equals(",")) {
+                                if (sb.length() > 0) {
+                                    translations.add(sb.toString().trim());
+                                    sb = new StringBuilder();
+                                }
+                                continue;
+                            }
+                            if (!word.isEmpty()) {
+                                sb.append(word).append(" ");
+                            }
                         }
-                        String text = node.toString();
-                        if (text == null) {
-                            continue;
-                        }
-                        if (text.length() > 150) {
-                            text = text.substring(0, 150);
-                        }
-                        transList.add(text.trim());
+                    }
+                    if (sb.length() > 0) {
+                        translations.add(sb.toString().trim());
                     }
                 }
             }
-            return new TranslationResult(word, transList);
-        } catch (Exception e) {
-            Log.e(getClass().getName(), e.getLocalizedMessage(), e);
-            executeActionSubject.onNext(new ShowToastAction(e.getLocalizedMessage()));
-            return new TranslationResult(word, EMPTY_STR_LIST);
         }
-    }
-
-    private static List<String> extractTranslations(Elements translations) {
-        List<String> result = new ArrayList<>();
-        StringBuilder word = new StringBuilder();
-        for (Element td : translations.select("td")) {
-            for (Element el : td.children()) {
-                if (el.tag().getName().equals("br") || el == el.lastElementSibling() || (el.tag().getName().equals("span") && el.hasClass("comma"))) {
-                    if (el == el.lastElementSibling()) {
-                        word.append(el.text());
-                        word.append(" ");
-                    }
-                    if (word.length() > 0) {
-                        result.add(word.toString().trim());
-                    }
-                    word = new StringBuilder();
-                    continue;
-                }
-                word.append(el.text());
-                word.append(" ");
-            }
-            if (word.length() > 0) {
-                result.add(word.toString().trim());
-                word = new StringBuilder();
-            }
+        TranslationResult translation = new TranslationResult(phrs, translations, jsonAnswer, answer);
+        if (translation.getTranslations().size() > 0) {
+            long wordId = storeTranslation(translation.getWord(), langFrom, translation.getTranslations(), langTo, jsonAnswer);
+            translation.setGender(getDao().getWordGender(wordId));
         }
-        return result;
+        return Observable.just(translation);
     }
 }

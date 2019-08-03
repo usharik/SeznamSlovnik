@@ -8,31 +8,58 @@ import com.usharik.seznamslovnik.dao.AppDatabase;
 import com.usharik.seznamslovnik.dao.DatabaseManager;
 import com.usharik.seznamslovnik.dao.TranslationStorageDao;
 
+import io.reactivex.Maybe;
 import io.reactivex.subjects.PublishSubject;
 
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import org.junit.Before;
 import org.junit.Test;
 import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 
 public class TranslationServiceTest {
 
     TranslationService translationService;
+    Retrofit retrofit;
+    Retrofit suggestionRetrofit;
+    TranslationStorageDao translationStorageDao;
 
     @Before
     public void before() {
-        Retrofit retrofit = new Retrofit.Builder()
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        httpClient.addInterceptor(logging);
+
+        retrofit = new Retrofit.Builder()
                 .baseUrl(UrlRepository.SEZNAM_TRANSLATE)
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .client(httpClient.build())
+                .build();
+
+        suggestionRetrofit = new Retrofit.Builder()
+                .baseUrl(UrlRepository.SEZNAM_SUGGEST)
+                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(SimpleXmlConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
 
         AppState appState = new AppState();
         appState.isOfflineMode = false;
 
-        TranslationStorageDao translationStorageDao = mock(TranslationStorageDao.class);
+        translationStorageDao = mock(TranslationStorageDao.class);
         AppDatabase appDatabase = mock(AppDatabase.class);
         when(appDatabase.translationStorageDao()).thenReturn(translationStorageDao);
 
@@ -40,12 +67,12 @@ public class TranslationServiceTest {
         when(databaseManager.getActiveDbInstance()).thenReturn(appDatabase);
 
         translationService = new TranslationService(databaseManager,
-                appState, retrofit, retrofit, mock(NetworkService.class), PublishSubject.create());
+                appState, retrofit, suggestionRetrofit, mock(NetworkService.class), PublishSubject.create());
     }
 
     @Test
     public void testOnlineTranslation1() {
-        TranslationResult translationResult = translationService.getOnlineTranslation("ahoj", "cz", "ru")
+        TranslationResult translationResult = translationService.getOnlineTranslation("pas", "cz", "ru")
                 .blockingGet();
         assertEquals(3, translationResult.getTranslations().size());
         assertEquals("ahoj", translationResult.getWord());
@@ -63,5 +90,15 @@ public class TranslationServiceTest {
         for (int i=0; i<translationResult.getTranslations().size(); i++) {
             assertEquals(A_TRANSLATIONS[i], translationResult.getTranslations().get(i));
         }
+    }
+
+    @Test
+    public void testOnlineSuggestions() {
+        when(translationStorageDao.getSuggestions(anyString(), anyString(), anyString(), anyString(), anyInt()))
+                .thenReturn(Maybe.just(new ArrayList<>()));
+
+        List<String> strings = translationService.getOnlineSuggestions("a", "cz", "ru", 50).blockingGet();
+
+        assertEquals(51, strings.size());
     }
 }

@@ -3,7 +3,7 @@ package com.usharik.seznamslovnik;
 import android.content.ClipboardManager;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.databinding.Bindable;
+import androidx.databinding.Bindable;
 import android.os.Vibrator;
 import android.util.Log;
 

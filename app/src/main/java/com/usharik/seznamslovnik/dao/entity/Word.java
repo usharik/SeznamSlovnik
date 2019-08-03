@@ -1,9 +1,9 @@
 package com.usharik.seznamslovnik.dao.entity;
 
-import android.arch.persistence.room.ColumnInfo;
-import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.Index;
-import android.arch.persistence.room.PrimaryKey;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Index;
+import androidx.room.PrimaryKey;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -17,7 +17,7 @@ import java.util.Date;
                     })
 public class Word {
 
-    public static final Word NULL_WORD = new Word(null, null, null);
+    public static final Word NULL_WORD = new Word(null, null, null, null);
 
     @PrimaryKey(autoGenerate = true)
     private Long id;
@@ -34,11 +34,15 @@ public class Word {
     @ColumnInfo(name = "load_date")
     private Date loadDate;
 
-    public Word(String word, String wordForSearch, String lang) {
+    @ColumnInfo(name = "json")
+    private String json;
+
+    public Word(String word, String wordForSearch, String lang, String json) {
         this.word = word;
         this.wordForSearch = wordForSearch;
         this.lang = lang;
         this.loadDate = Calendar.getInstance().getTime();
+        this.json = json;
     }
 
     public Long getId() {
@@ -79,5 +83,13 @@ public class Word {
 
     public void setLoadDate(Date loadDate) {
         this.loadDate = loadDate;
+    }
+
+    public String getJson() {
+        return json;
+    }
+
+    public void setJson(String json) {
+        this.json = json;
     }
 }

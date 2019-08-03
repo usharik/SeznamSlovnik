@@ -1,7 +1,7 @@
 package com.usharik.seznamslovnik.dialog;
 
 import android.content.DialogInterface;
-import android.databinding.Bindable;
+import androidx.databinding.Bindable;
 
 import com.usharik.seznamslovnik.AppState;
 import com.usharik.seznamslovnik.BR;

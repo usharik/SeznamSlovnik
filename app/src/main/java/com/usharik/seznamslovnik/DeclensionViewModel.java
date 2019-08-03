@@ -1,7 +1,7 @@
 package com.usharik.seznamslovnik;
 
-import android.databinding.Bindable;
-import android.support.v7.widget.RecyclerView;
+import androidx.databinding.Bindable;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 
 import com.usharik.seznamslovnik.action.Action;
