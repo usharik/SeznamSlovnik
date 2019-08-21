@@ -3,6 +3,7 @@ package com.usharik.seznamslovnik.di;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.usharik.seznamslovnik.AdditionalInfoViewModel;
 import com.usharik.seznamslovnik.DeclensionViewModel;
 import com.usharik.seznamslovnik.MainViewModel;
 import com.usharik.seznamslovnik.dialog.ProxyDialogViewModel;
@@ -26,6 +27,11 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(DeclensionViewModel.class)
     abstract ViewModel bindDeclensionViewModel(DeclensionViewModel userViewModel);
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(AdditionalInfoViewModel.class)
+    abstract ViewModel bindAdditionalInfoViewModel(AdditionalInfoViewModel userViewModel);
 
     @Binds
     @IntoMap

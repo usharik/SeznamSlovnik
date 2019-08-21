@@ -1,19 +1,20 @@
 package com.usharik.seznamslovnik;
 
+import android.os.Bundle;
+import android.view.*;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 
 import com.usharik.seznamslovnik.action.Action;
 import com.usharik.seznamslovnik.action.ShowToastAction;
-import com.usharik.seznamslovnik.databinding.ActivityDeclensionBinding;
+import com.usharik.seznamslovnik.databinding.FragmentDeclensionBinding;
 import com.usharik.seznamslovnik.dialog.ProxyDialog;
-import com.usharik.seznamslovnik.framework.ViewActivity;
+import com.usharik.seznamslovnik.framework.ViewFragment;
 import com.usharik.seznamslovnik.util.WaitDialogManager;
 
 import javax.inject.Inject;
@@ -23,37 +24,32 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 
-public class DeclensionActivity extends ViewActivity<DeclensionViewModel> {
+public class DeclensionFragment extends ViewFragment<DeclensionViewModel> {
 
-    private ActivityDeclensionBinding binding;
+    private FragmentDeclensionBinding binding;
     private Disposable disposable;
 
     @Inject
     PublishSubject<Action> executeActionSubject;
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_declension);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_declension, container, false);
         binding.setViewModel(getViewModel());
-        binding.declensionList.setLayoutManager(new LinearLayoutManager(this));
+        binding.declensionList.setLayoutManager(new LinearLayoutManager(this.getContext()));
         disposable = updateWordForms();
         binding.linkToSource.setText(getViewModel().getLink());
+        setHasOptionsMenu(true);
+        return binding.getRoot();
     }
 
     private Disposable updateWordForms() {
         return getViewModel().getAdapter()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .compose(WaitDialogManager.showForObservable(getSupportFragmentManager()))
+                .compose(WaitDialogManager.showForObservable(getFragmentManager()))
                 .subscribe(binding.declensionList::setAdapter, this::onError);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.dec_options, menu);
-        return true;
     }
 
     @Override
@@ -71,8 +67,8 @@ public class DeclensionActivity extends ViewActivity<DeclensionViewModel> {
     }
 
     private void showProxyDialog() {
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        Fragment prev = getSupportFragmentManager().findFragmentByTag("proxy_dialog");
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        Fragment prev = getFragmentManager().findFragmentByTag("proxy_dialog");
         if (prev != null) {
             ft.remove(prev);
         }

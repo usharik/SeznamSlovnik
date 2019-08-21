@@ -24,4 +24,6 @@
     <string name="use_proxy">Use proxy</string>
     <string name="translate_back">Translate back</string>
     <string name="new_version">New version</string>
+    <string name="declension_tab">Declension</string>
+    <string name="add_info_tab">Additional info</string>
 </resources>

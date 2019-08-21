@@ -17,6 +17,8 @@ public class AppState {
     public ProxyInfo proxyInfo = ProxyInfo.DIRECT_PROXY;
     public String wordForDeclension;
 
+    private int currentTab;
+
     public int getFromLanguageIx() {
         return fromLanguageIx;
     }
@@ -53,6 +55,14 @@ public class AppState {
         this.word = pop.word;
         this.fromLanguageIx = pop.fromLanguageIx;
         this.toLanguageIx = pop.toLanguageIx;
+    }
+
+    public int getCurrentTab() {
+        return currentTab;
+    }
+
+    public void setCurrentTab(int currentTab) {
+        this.currentTab = currentTab;
     }
 
     private static class WordState {

@@ -1,5 +1,6 @@
 package com.usharik.seznamslovnik;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
 import android.app.Service;
@@ -8,9 +9,10 @@ import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.fragment.app.Fragment;
 import com.usharik.seznamslovnik.action.Action;
 import com.usharik.seznamslovnik.action.BackupDictionaryAction;
-import com.usharik.seznamslovnik.action.DeclensionAction;
+import com.usharik.seznamslovnik.action.AdditionalInfoAction;
 import com.usharik.seznamslovnik.action.OpenUrlInBrowserAction;
 import com.usharik.seznamslovnik.action.PrevWordAction;
 import com.usharik.seznamslovnik.action.RestoreDictionaryAction;
@@ -19,6 +21,8 @@ import com.usharik.seznamslovnik.action.TranslateWordAction;
 import com.usharik.seznamslovnik.dao.DatabaseManager;
 import com.usharik.seznamslovnik.di.DaggerAppComponent;
 
+import dagger.android.*;
+import dagger.android.support.HasSupportFragmentInjector;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashSet;
@@ -27,10 +31,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import dagger.android.AndroidInjector;
-import dagger.android.DispatchingAndroidInjector;
-import dagger.android.HasActivityInjector;
-import dagger.android.HasServiceInjector;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.subjects.PublishSubject;
@@ -39,10 +39,13 @@ import io.reactivex.subjects.PublishSubject;
  * Created by macbook on 08.02.18.
  */
 
-public class App extends Application implements HasActivityInjector, HasServiceInjector {
+public class App extends Application implements HasActivityInjector, HasServiceInjector, HasSupportFragmentInjector {
 
     @Inject
     DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
+
+    @Inject
+    DispatchingAndroidInjector<Fragment> dispatchingAndroidFragmentInjector;
 
     @Inject
     DispatchingAndroidInjector<Service> dispatchingServiceInjector;
@@ -101,9 +104,9 @@ public class App extends Application implements HasActivityInjector, HasServiceI
                 return Observable.just(message);
             }
 
-            case DeclensionAction.DECLENSION_ACTION_ACTION: {
-                appState.wordForDeclension = ((DeclensionAction) action).getWord();
-                Intent intent = new Intent(this, DeclensionActivity.class);
+            case AdditionalInfoAction.ADDITIONAL_INFO_ACTION: {
+                appState.wordForDeclension = ((AdditionalInfoAction) action).getWord();
+                Intent intent = new Intent(this, AdditionalInfoActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 return Observable.empty();
@@ -131,6 +134,7 @@ public class App extends Application implements HasActivityInjector, HasServiceI
         }
     }
 
+    @SuppressLint("CheckResult")
     private void showAggregatedToast(Observable<String> message) {
         message.toList()
                 .map(HashSet::new)
@@ -159,6 +163,11 @@ public class App extends Application implements HasActivityInjector, HasServiceI
     @Override
     public DispatchingAndroidInjector<Activity> activityInjector() {
         return dispatchingAndroidInjector;
+    }
+
+    @Override
+    public AndroidInjector<Fragment> supportFragmentInjector() {
+        return dispatchingAndroidFragmentInjector;
     }
 
     @Override

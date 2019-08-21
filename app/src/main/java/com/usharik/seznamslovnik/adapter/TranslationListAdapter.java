@@ -18,7 +18,7 @@ import com.usharik.seznamslovnik.MainActivity;
 import com.usharik.seznamslovnik.R;
 import com.usharik.seznamslovnik.UrlRepository;
 import com.usharik.seznamslovnik.action.Action;
-import com.usharik.seznamslovnik.action.DeclensionAction;
+import com.usharik.seznamslovnik.action.AdditionalInfoAction;
 import com.usharik.seznamslovnik.action.OpenUrlInBrowserAction;
 import com.usharik.seznamslovnik.action.ShowToastAction;
 import com.usharik.seznamslovnik.action.TranslateWordAction;
@@ -160,7 +160,7 @@ public class TranslationListAdapter extends RecyclerView.Adapter<TranslationList
                 }
                 case R.id.additionalInfo: {
                     int position = (Integer) ((View) view.getParent()).getTag();
-                    executeActionSubject.onNext(new DeclensionAction(suggestList.get(position)));
+                    executeActionSubject.onNext(new AdditionalInfoAction(suggestList.get(position)));
                     break;
                 }
                 case R.id.dictCom: {

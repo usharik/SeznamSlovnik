@@ -1,6 +1,7 @@
 package com.usharik.seznamslovnik.di;
 
-import com.usharik.seznamslovnik.DeclensionActivity;
+import com.usharik.seznamslovnik.AdditionalInfoActivity;
+import com.usharik.seznamslovnik.DeclensionFragment;
 import com.usharik.seznamslovnik.MainActivity;
 import com.usharik.seznamslovnik.dialog.ProxyDialog;
 import com.usharik.seznamslovnik.service.message.SlovnikFirebaseMessagingService;
@@ -18,7 +19,10 @@ public abstract class ActivityModule {
     abstract MainActivity contributeMainActivity();
 
     @ContributesAndroidInjector
-    abstract DeclensionActivity contributeDeclensionActivity();
+    abstract AdditionalInfoActivity contributeAdditionalInfoActivity();
+
+    @ContributesAndroidInjector
+    abstract DeclensionFragment contributeDeclensionFragment();
 
     @ContributesAndroidInjector
     abstract ProxyDialog contributeProxyDialog();

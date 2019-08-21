@@ -1,17 +1,17 @@
 package com.usharik.seznamslovnik.action;
 
-public class DeclensionAction implements Action {
+public class AdditionalInfoAction implements Action {
 
-    public static final int DECLENSION_ACTION_ACTION = 5;
+    public static final int ADDITIONAL_INFO_ACTION = 5;
 
     private String word;
 
     @Override
     public int getType() {
-        return DECLENSION_ACTION_ACTION;
+        return ADDITIONAL_INFO_ACTION;
     }
 
-    public DeclensionAction(String word) {
+    public AdditionalInfoAction(String word) {
         this.word = word;
     }
 

@@ -28,7 +28,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".DeclensionActivity" />
+        <activity android:name=".AdditionalInfoActivity" />
 
         <service
             android:name="com.usharik.seznamslovnik.service.message.SlovnikFirebaseMessagingService">
