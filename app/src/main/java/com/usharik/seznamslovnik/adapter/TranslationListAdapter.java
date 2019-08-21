@@ -160,7 +160,7 @@ public class TranslationListAdapter extends RecyclerView.Adapter<TranslationList
                 }
                 case R.id.additionalInfo: {
                     int position = (Integer) ((View) view.getParent()).getTag();
-                    executeActionSubject.onNext(new AdditionalInfoAction(suggestList.get(position)));
+                    executeActionSubject.onNext(new AdditionalInfoAction(suggestList.get(position), translations.get(position)));
                     break;
                 }
                 case R.id.dictCom: {

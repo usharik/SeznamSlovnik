@@ -1,6 +1,7 @@
 package com.usharik.seznamslovnik;
 
 import androidx.databinding.Bindable;
+import com.usharik.seznamslovnik.adapter.TranslationResult;
 import com.usharik.seznamslovnik.framework.ViewModelObservable;
 
 import javax.inject.Inject;
@@ -21,5 +22,10 @@ public class AdditionalInfoViewModel extends ViewModelObservable {
 
     public void setCurrentTab(int currentTab) {
         appState.setCurrentTab(currentTab);
+    }
+
+    public String getWordJson() {
+        TranslationResult translationResult = appState.getTranslationResult();
+        return translationResult != null ? translationResult.getJsonAnswer() : "";
     }
 }

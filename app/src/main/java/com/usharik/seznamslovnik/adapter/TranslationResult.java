@@ -48,7 +48,7 @@ public class TranslationResult {
     }
 
     public String getJsonAnswer() {
-        return jsonAnswer;
+        return jsonAnswer != null ? jsonAnswer : "{}";
     }
 
     public void setJsonAnswer(String jsonAnswer) {

@@ -1,5 +1,6 @@
 package com.usharik.seznamslovnik;
 
+import com.usharik.seznamslovnik.adapter.TranslationResult;
 import com.usharik.seznamslovnik.dialog.ProxyInfo;
 
 import java.util.Deque;
@@ -16,6 +17,7 @@ public class AppState {
     public boolean isOfflineMode = false;
     public ProxyInfo proxyInfo = ProxyInfo.DIRECT_PROXY;
     public String wordForDeclension;
+    private TranslationResult translationResult;
 
     private int currentTab;
 
@@ -63,6 +65,14 @@ public class AppState {
 
     public void setCurrentTab(int currentTab) {
         this.currentTab = currentTab;
+    }
+
+    public TranslationResult getTranslationResult() {
+        return translationResult;
+    }
+
+    public void setTranslationResult(TranslationResult translationResult) {
+        this.translationResult = translationResult;
     }
 
     private static class WordState {

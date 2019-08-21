@@ -105,7 +105,9 @@ public class App extends Application implements HasActivityInjector, HasServiceI
             }
 
             case AdditionalInfoAction.ADDITIONAL_INFO_ACTION: {
-                appState.wordForDeclension = ((AdditionalInfoAction) action).getWord();
+                AdditionalInfoAction ac = (AdditionalInfoAction) action;
+                appState.wordForDeclension = ac.getWord();
+                appState.setTranslationResult(ac.getTranslationResult());
                 Intent intent = new Intent(this, AdditionalInfoActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);

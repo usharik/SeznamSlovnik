@@ -32,6 +32,8 @@ public class AdditionalInfoActivity extends ViewActivity<AdditionalInfoViewModel
         tabSpec.setIndicator(getResources().getString(R.string.add_info_tab));
         tabSpec.setContent(binding.tab2.getId());
         binding.tabHost.addTab(tabSpec);
+
+        binding.rvJson.bindJson(getViewModel().getWordJson());
     }
 
     @Override

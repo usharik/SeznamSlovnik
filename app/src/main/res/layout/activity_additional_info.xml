@@ -47,7 +47,21 @@
                 <RelativeLayout android:id="@+id/tab2"
                                 android:orientation="horizontal"
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"/>
+                                android:layout_height="match_parent">
+
+                    <HorizontalScrollView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:fillViewport="true"
+                            android:orientation="vertical">
+
+                        <com.yuyh.jsonviewer.library.JsonRecyclerView
+                                android:id="@+id/rv_json"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+                    </HorizontalScrollView>
+
+                </RelativeLayout>
             </FrameLayout>
 
         </LinearLayout>
