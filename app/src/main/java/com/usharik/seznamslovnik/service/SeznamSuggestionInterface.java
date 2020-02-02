@@ -9,7 +9,7 @@ import retrofit2.http.Query;
 
 public interface SeznamSuggestionInterface {
 
-    @GET("/slovnik/{from}_{to}?")
+    @GET("/slovnik/mix_{from}_{to}")
     Observable<Suggest> doGetSuggestions(@Path("from") String from,
                                          @Path("to") String to,
                                          @Query("phrase") String phrase,

@@ -1,5 +1,6 @@
 package com.usharik.seznamslovnik;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.widget.TabHost;
@@ -33,7 +34,14 @@ public class AdditionalInfoActivity extends ViewActivity<AdditionalInfoViewModel
         tabSpec.setContent(binding.tab2.getId());
         binding.tabHost.addTab(tabSpec);
 
-        binding.rvJson.bindJson(getViewModel().getWordJson());
+        binding.tabHost.setOnTabChangedListener(this::tabChangeListener);
+    }
+
+    private void tabChangeListener(String tabTag) {
+        Log.e(getClass().getName(),"Tab change " + tabTag);
+        if (tabTag.equals("tag2")) {
+            binding.rvJson.bindJson(getViewModel().getWordJson());
+        }
     }
 
     @Override

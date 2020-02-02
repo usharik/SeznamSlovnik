@@ -1,6 +1,7 @@
 package com.usharik.seznamslovnik;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -102,6 +103,7 @@ public class MainActivity extends ViewActivity<MainViewModel> {
         getViewModel().refreshSuggestion();
     }
 
+    @SuppressLint("CheckResult")
     private void loadDictionaryFromUrl() {
         databaseManager.getActiveDbInstance().translationStorageDao().getWordCount()
                 .filter(val -> val == 0)
