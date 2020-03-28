@@ -75,7 +75,7 @@ public class TranslationServiceTest {
         TranslationResult translationResult = translationService.getOnlineTranslation("pas", "cz", "ru")
                 .blockingGet();
         assertEquals(3, translationResult.getTranslations().size());
-        assertEquals("ahoj", translationResult.getWord());
+        assertEquals("pas", translationResult.getWord());
     }
 
     @Test
@@ -99,6 +99,6 @@ public class TranslationServiceTest {
 
         List<String> strings = translationService.getOnlineSuggestions("a", "cz", "ru", 50).blockingGet();
 
-        assertEquals(51, strings.size());
+        assertEquals(21, strings.size());
     }
 }

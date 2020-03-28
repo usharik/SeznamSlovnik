@@ -1,0 +1,295 @@
+{
+  "translate": [],
+  "sound": "",
+  "relations": {},
+  "ftx_samp": [
+    {
+      "reve": 1,
+      "entr": "odležet",
+      "samp2s": "nechat odležet, dát odležet",
+      "samp2t": "вы́лежать, отлежа́ть"
+    },
+    {
+      "reve": 1,
+      "entr": "odkapat",
+      "samp2s": "nechat odkapat",
+      "samp2t": "дать воде́ стечь ка́плями"
+    },
+    {
+      "reve": 1,
+      "entr": "pokoj",
+      "samp2s": "Nechej ho na pokoji.",
+      "samp2t": "Оста́вь его́ в поко́е."
+    },
+    {
+      "reve": 1,
+      "entr": "vyvést",
+      "samp2s": "nechat <span class='w'>koho</span> vyvést ze sálu",
+      "samp2t": "отда́ть распоряже́ние вы́вести <span class='w'>кого</span> из за́ла"
+    },
+    {
+      "reve": 1,
+      "entr": "čekat",
+      "samp2s": "Nenechal nás (na sebe) dlouho čekat.",
+      "samp2t": "Он не заста́вил нас до́лго ждать."
+    },
+    {
+      "reve": 1,
+      "entr": "dozor",
+      "samp2s": "nechat děti bez dozoru",
+      "samp2t": "оста́вить дете́й без присмо́тра"
+    },
+    {
+      "reve": 1,
+      "entr": "drobné",
+      "samp2s": "Drobné si nechte.",
+      "samp2t": "Сда́чи не на́до."
+    },
+    {
+      "reve": 1,
+      "entr": "klid",
+      "samp2s": "Nech mě v klidu.",
+      "samp2t": "Оста́вь меня́ в поко́е."
+    },
+    {
+      "reve": 1,
+      "entr": "napospas",
+      "samp2s": "nechat <span class='w'>koho/co</span> napospas osudu",
+      "samp2t": "оста́вить <span class='w'>кого/что</span> на произво́л судьбы́"
+    },
+    {
+      "reve": 1,
+      "entr": "narůst",
+      "samp2s": "nechat si narůst vousy",
+      "samp2t": "отпусти́ть себе́ бо́роду"
+    },
+    {
+      "reve": 1,
+      "entr": "ostříhat",
+      "samp2s": "nechat se ostříhat",
+      "samp2t": "по(д)стри́чься"
+    },
+    {
+      "reve": 1,
+      "entr": "poradit",
+      "samp2s": "Nechte si poradit.",
+      "samp2t": "Послу́шайтесь моего́ сове́та."
+    },
+    {
+      "reve": 1,
+      "entr": "přesvědčit se",
+      "samp2s": "nechat se přesvědčit",
+      "samp2t": "дать себя́ уговори́ть"
+    },
+    {
+      "reve": 1,
+      "entr": "recepce",
+      "samp2s": "Klíč nechejte na recepci.",
+      "samp2t": "Ключ оста́вьте у администра́тора."
+    },
+    {
+      "reve": 1,
+      "entr": "rezerva",
+      "samp2s": "nechat <span class='w'>co</span> v rezervě",
+      "samp2t": "оста́вить <span class='w'>что</span> в резе́рве"
+    },
+    {
+      "reve": 1,
+      "entr": "silikon",
+      "samp2s": "Nechala si odstranit silikony.",
+      "samp2t": "Она́ удали́ла свои́ силико́новые гру́ди."
+    },
+    {
+      "reve": 1,
+      "entr": "spravit",
+      "samp2s": "nechat si spravit <span class='w'>co</span>",
+      "samp2t": "отда́ть в почи́нку <span class='w'>что</span>"
+    },
+    {
+      "reve": 1,
+      "entr": "ujít",
+      "samp2s": "Nenechte si ujít...",
+      "samp2t": "Не пропусти́те..."
+    },
+    {
+      "reve": 1,
+      "entr": "var",
+      "samp2s": "nechat přejít varem",
+      "samp2t": "прокипяти́ть, дать прокипе́ть"
+    },
+    {
+      "reve": 1,
+      "entr": "vzkaz",
+      "samp2s": "nechat <span class='w'>komu</span> vzkaz",
+      "samp2t": "оста́вить <span class='w'>кому</span> запи́ску"
+    },
+    {
+      "reve": 1,
+      "entr": "chutnat",
+      "samp2s": "Nech si chutnat!",
+      "samp2t": "Прия́тного аппети́та!"
+    },
+    {
+      "reve": 1,
+      "entr": "plavat",
+      "samp2s": "Nech to plavat! <span class='d'>nemysli už na to</span>",
+      "samp2t": "Не бери́ до го́ловы!"
+    },
+    {
+      "reve": 1,
+      "entr": "poznámka",
+      "samp2s": "nechat <span class='w'>co</span> bez poznámky",
+      "samp2t": "оста́вить <span class='w'>что</span> без замеча́ния"
+    },
+    {
+      "reve": 1,
+      "entr": "pro",
+      "samp2s": "Ty rady si nech pro sebe.",
+      "samp2t": "Свои́ сове́ты оста́вь (при) себе́!"
+    },
+    {
+      "reve": 1,
+      "entr": "prosit",
+      "samp2s": "nechat se prosit <span class='d'>dělat drahoty</span>",
+      "samp2t": "заставля́ть себя́ упра́шивать"
+    },
+    {
+      "reve": 1,
+      "entr": "průběh",
+      "samp2s": "nechat věcem volný průběh",
+      "samp2t": "предоста́вить де́лу есте́ственный ход"
+    },
+    {
+      "reve": 1,
+      "entr": "překvapit",
+      "samp2s": "Nech se překvapit!",
+      "samp2t": "Набери́сь терпе́ния!"
+    },
+    {
+      "reve": 1,
+      "entr": "rozum",
+      "samp2s": "Nechej si své rozumy.",
+      "samp2t": "Не лезь со свои́ми сове́тами., Не встрева́й."
+    },
+    {
+      "reve": 1,
+      "entr": "štípat",
+      "samp2s": "Nechá na sobě dříví štípat.",
+      "samp2t": "Из него́ хоть верёвки вей."
+    },
+    {
+      "reve": 1,
+      "entr": "štych",
+      "samp2s": "nechat ve štychu",
+      "samp2t": "бро́сить в беде́"
+    },
+    {
+      "reve": 1,
+      "entr": "zadní",
+      "samp2s": "nechat otevřená zadní vrátka",
+      "samp2t": "оста́вить лазе́йку"
+    },
+    {
+      "reve": 1,
+      "entr": "zásoba",
+      "samp2s": "nechat si v zásobě <span class='w'>co</span>",
+      "samp2t": "оста́вить в резе́рве <span class='w'>что</span>"
+    },
+    {
+      "reve": 0,
+      "entr": "внима́ние",
+      "samp2s": "nechat bez povšimnutí",
+      "samp2t": "оста́вить <span class='w'>кого</span> без внима́ния"
+    },
+    {
+      "reve": 0,
+      "entr": "голова́",
+      "samp2s": "Pusť to z hlavy., Nech to být.",
+      "samp2t": "Не бери́ в го́лову."
+    },
+    {
+      "reve": 0,
+      "entr": "до́лжное",
+      "samp2s": "To se (mu) musí nechat,...",
+      "samp2t": "На́до отда́ть ему́ до́лжное,..."
+    },
+    {
+      "reve": 0,
+      "entr": "ждать",
+      "samp2s": "Nenechal na sebe dlouho čekat.",
+      "samp2t": "Не заста́вил себя́ до́лго ждать."
+    },
+    {
+      "reve": 0,
+      "entr": "оста́вить",
+      "samp2s": "nechat otázku otevřenou",
+      "samp2t": "оста́вить вопро́с откры́тым"
+    },
+    {
+      "reve": 0,
+      "entr": "отвяза́ться",
+      "samp2s": "Neotravuj (mě)!, Nech mě na pokoji!",
+      "samp2t": "Отвяжи́сь от меня́!"
+    },
+    {
+      "reve": 0,
+      "entr": "поко́й",
+      "samp2s": "nechat <span class='w'>koho</span> na pokoji, dát <span class='w'>komu</span> pokoj",
+      "samp2t": "оста́вить <span class='w'>кого</span> в поко́е"
+    },
+    {
+      "reve": 0,
+      "entr": "слу́чай",
+      "samp2s": "nechat si ujít příležitost",
+      "samp2t": "упусти́ть слу́чай"
+    },
+    {
+      "reve": 0,
+      "entr": "глаз",
+      "samp2s": "oči se rozzářily (při pohledu) <span class='w'>na co</span>, moci <span class='w'>na čem</span> oči nechat",
+      "samp2t": "глаза́ разгоре́лись <span class='w'>на что</span>"
+    },
+    {
+      "reve": 0,
+      "entr": "ка́мень",
+      "samp2s": "nenechat kámen na kameni",
+      "samp2t": "ка́мня на ка́мне не оста́вить <span class='w'>от чего</span>"
+    },
+    {
+      "reve": 0,
+      "entr": "у́дочка",
+      "samp2s": "nechat se napálit, sednout na lep",
+      "samp2t": "попа́сться на у́дочку"
+    },
+    {
+      "reve": 1,
+      "entr": "nechat",
+      "samp2s": "nechat si",
+      "samp2t": "<span class='c'>podržet ve vlastnictví</span> оста́вить (себе́), отложи́ть"
+    }
+  ],
+  "other": [],
+  "morf_table": {},
+  "short": [
+    {
+      "entr": "nechat",
+      "dict": "cz_ru",
+      "trans": "позволить, дать (возможность)"
+    },
+    {
+      "entr": "nechtě, nechtíc",
+      "dict": "cz_ru",
+      "trans": "нечаянно, неумышленно, нехотя"
+    },
+    {
+      "entr": "chtít",
+      "dict": "cz_ru",
+      "trans": "хотеть, желать"
+    },
+    {
+      "entr": "chtít se",
+      "dict": "cz_ru",
+      "trans": "хотеться"
+    }
+  ]
+}

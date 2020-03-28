@@ -1,0 +1,541 @@
+{
+  "translate": [
+    {
+      "head": {
+        "entr": "dům",
+        "pron": "",
+        "form": "",
+        "morf": "podstatné jméno, rod mužský",
+        "phrs": "dům",
+        "vari": "",
+        "vfem": "",
+        "hyph": "",
+        "prag": "",
+        "cntx": "",
+        "dict": "cz_ru",
+        "morf_id": ""
+      },
+      "grps": [
+        {
+          "sens": [
+            {
+              "morf": "",
+              "numb": " 1",
+              "phrs": "",
+              "styl": "",
+              "form": "",
+              "trans": [
+                [
+                  "<span class='c'>(budova)</span>",
+                  " ",
+                  "дом",
+                  ", ",
+                  "зда́ние"
+                ]
+              ],
+              "coll2": [
+                {
+                  "coll2s": "veřejný dům",
+                  "coll2t": "публи́чный дом"
+                },
+                {
+                  "coll2s": "obchodní dům",
+                  "coll2t": "универма́г, торго́вый дом"
+                }
+              ],
+              "samp2": [
+                {
+                  "samp2s": "obytný dům",
+                  "samp2t": "жило́й дом"
+                },
+                {
+                  "samp2s": "činžovní/panelový dům",
+                  "samp2t": "дохо́дный/пане́льный дом"
+                },
+                {
+                  "samp2s": "rodinný dům",
+                  "samp2t": "(одно)семе́йный дом"
+                }
+              ],
+              "note2": "",
+              "desc2": "",
+              "link2": []
+            },
+            {
+              "morf": "",
+              "numb": " 2",
+              "phrs": "",
+              "styl": "",
+              "form": "",
+              "trans": [
+                [
+                  "<span class='c'>(sídlo instituce)</span>",
+                  " ",
+                  "дом"
+                ]
+              ],
+              "coll2": [
+                {
+                  "coll2s": "Bílý dům",
+                  "coll2t": "Бе́лый дом"
+                }
+              ],
+              "samp2": [
+                {
+                  "samp2s": "bankovní dům",
+                  "samp2t": "банки́рский дом"
+                }
+              ],
+              "note2": "",
+              "desc2": "",
+              "link2": []
+            },
+            {
+              "morf": "",
+              "numb": " 3",
+              "phrs": "",
+              "styl": "",
+              "form": "",
+              "trans": [
+                [
+                  "<span class='c'>(domov)</span>",
+                  " ",
+                  "дом"
+                ]
+              ],
+              "coll2": [],
+              "samp2": [
+                {
+                  "samp2s": "rodný dům",
+                  "samp2t": "родно́й дом"
+                }
+              ],
+              "note2": "",
+              "desc2": "",
+              "link2": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sound": "",
+  "relations": {
+    "Synonyma": [
+      "barák",
+      "budova",
+      "domov",
+      "domácnost",
+      "rodina",
+      "stavení"
+    ],
+    "Odvozená slova": [
+      "domek",
+      "domeček",
+      "domovní"
+    ],
+    "dict": "cz_ru",
+    "direction": "from"
+  },
+  "ftx_samp": [
+    {
+      "reve": 1,
+      "entr": "bytový",
+      "samp2s": "bytový dům",
+      "samp2t": "жило́й дом"
+    },
+    {
+      "reve": 1,
+      "entr": "činžovní",
+      "samp2s": "činžovní dům",
+      "samp2t": "дохо́дный дом, жило́й (многоэта́жный) дом"
+    },
+    {
+      "reve": 1,
+      "entr": "malá",
+      "samp2s": "<span class='y'>sport.</span> malá domů",
+      "samp2t": "пас наза́д вратарю́"
+    },
+    {
+      "reve": 1,
+      "entr": "obchodní",
+      "samp2s": "obchodní dům",
+      "samp2t": "универма́г, торго́вый дом"
+    },
+    {
+      "reve": 1,
+      "entr": "od, ode",
+      "samp2s": "dům od domu",
+      "samp2t": "от до́ма к до́му, из до́ма в дом"
+    },
+    {
+      "reve": 1,
+      "entr": "práce",
+      "samp2s": "práce z domu",
+      "samp2t": "рабо́та на дому́"
+    },
+    {
+      "reve": 1,
+      "entr": "řadový",
+      "samp2s": "řadový dům",
+      "samp2t": "блоки́рованный дом, дом рядово́й застро́йки"
+    },
+    {
+      "reve": 1,
+      "entr": "veřejný",
+      "samp2s": "veřejný dům",
+      "samp2t": "публи́чный дом, <span class='y'>zast.</span> дом терпи́мости"
+    },
+    {
+      "reve": 1,
+      "entr": "azylový",
+      "samp2s": "azylový dům",
+      "samp2t": "дом для бе́женцев, дом-убе́жище"
+    },
+    {
+      "reve": 1,
+      "entr": "dvougenerační",
+      "samp2s": "dvougenerační dům",
+      "samp2t": "дом для двух поколе́ний"
+    },
+    {
+      "reve": 1,
+      "entr": "dvoupatrový",
+      "samp2s": "dvoupatrový dům",
+      "samp2t": "трёхэта́жный дом"
+    },
+    {
+      "reve": 1,
+      "entr": "jít",
+      "samp2s": "Je čas jít domů.",
+      "samp2t": "Пора́ идти́ домо́й."
+    },
+    {
+      "reve": 1,
+      "entr": "kamenný",
+      "samp2s": "kamenný dům",
+      "samp2t": "ка́менный дом"
+    },
+    {
+      "reve": 1,
+      "entr": "klíč",
+      "samp2s": "klíč od auta/domu",
+      "samp2t": "ключ от маши́ны/до́ма"
+    },
+    {
+      "reve": 1,
+      "entr": "majitel",
+      "samp2s": "majitel domu",
+      "samp2t": "владе́лец до́ма, домовладе́лец"
+    },
+    {
+      "reve": 1,
+      "entr": "muset",
+      "samp2s": "Musím jít domů.",
+      "samp2t": "Я до́лжен/Мне на́до идти́ домо́й."
+    },
+    {
+      "reve": 1,
+      "entr": "načase",
+      "samp2s": "Je načase jít domů.",
+      "samp2t": "Уже́ пора́ домо́й."
+    },
+    {
+      "reve": 1,
+      "entr": "nejvyšší",
+      "samp2s": "Náš dům je nejvyšší.",
+      "samp2t": "Наш дом са́мый высо́кий."
+    },
+    {
+      "reve": 1,
+      "entr": "neobývaný",
+      "samp2s": "neobývaný dům",
+      "samp2t": "необита́емый дом"
+    },
+    {
+      "reve": 1,
+      "entr": "okolí",
+      "samp2s": "v okolí domu",
+      "samp2t": "в окре́стности до́ма"
+    },
+    {
+      "reve": 1,
+      "entr": "padat",
+      "samp2s": "Padej domů!",
+      "samp2t": "Дуй домо́й!"
+    },
+    {
+      "reve": 1,
+      "entr": "panelový",
+      "samp2s": "panelový dům",
+      "samp2t": "пане́льный дом"
+    },
+    {
+      "reve": 1,
+      "entr": "paní",
+      "samp2s": "paní domu",
+      "samp2t": "хозя́йка до́ма"
+    },
+    {
+      "reve": 1,
+      "entr": "panský",
+      "samp2s": "panský dům",
+      "samp2t": "госпо́дский дом"
+    },
+    {
+      "reve": 1,
+      "entr": "parkovací",
+      "samp2s": "parkovací dům",
+      "samp2t": "многоэта́жная автостоя́нка"
+    },
+    {
+      "reve": 1,
+      "entr": "pokládat",
+      "samp2s": "<span class='y'>stav.</span> pokládat základy domu",
+      "samp2t": "подводи́ть фунда́менты"
+    },
+    {
+      "reve": 1,
+      "entr": "prásknout",
+      "samp2s": "Blesk prásknul do domu.",
+      "samp2t": "Мо́лния удари́ла в дом."
+    },
+    {
+      "reve": 1,
+      "entr": "proniknout",
+      "samp2s": "proniknout do domu",
+      "samp2t": "прони́кнуть в дом"
+    },
+    {
+      "reve": 1,
+      "entr": "rád",
+      "samp2s": "Jdi raději domů.",
+      "samp2t": "Иди́ лу́чше домо́й."
+    },
+    {
+      "reve": 1,
+      "entr": "rodný",
+      "samp2s": "rodný dům",
+      "samp2t": "родно́й дом, пена́ты"
+    },
+    {
+      "reve": 1,
+      "entr": "rozestavěný",
+      "samp2s": "rozestavěný dům",
+      "samp2t": "стро́ящийся дом"
+    },
+    {
+      "reve": 1,
+      "entr": "rozvážka",
+      "samp2s": "rozvážka obědů až domů",
+      "samp2t": "доста́вка обе́дов на́ дом"
+    },
+    {
+      "reve": 1,
+      "entr": "spadnutí",
+      "samp2s": "Dům je na spadnutí.",
+      "samp2t": "Дом вот-вот ру́хнет."
+    },
+    {
+      "reve": 1,
+      "entr": "starý",
+      "samp2s": "starý dům",
+      "samp2t": "ста́рый дом"
+    },
+    {
+      "reve": 1,
+      "entr": "vlastnictví",
+      "samp2s": "dům ve společném vlastnictví",
+      "samp2t": "совладе́льческий дом"
+    },
+    {
+      "reve": 1,
+      "entr": "vnitřek",
+      "samp2s": "vnitřek domu",
+      "samp2t": "интерье́р до́ма"
+    },
+    {
+      "reve": 1,
+      "entr": "vyrazit",
+      "samp2s": "vyrazit <span class='w'>koho</span> na ulici/z domu",
+      "samp2t": "вы́швырнуть <span class='w'>кого</span> на у́лицу/из до́ма"
+    },
+    {
+      "reve": 1,
+      "entr": "výstavný",
+      "samp2s": "výstavný dům",
+      "samp2t": "благоустро́енный дом"
+    },
+    {
+      "reve": 1,
+      "entr": "zapálit",
+      "samp2s": "zapálit dům",
+      "samp2t": "подже́чь дом"
+    },
+    {
+      "reve": 1,
+      "entr": "zateplení",
+      "samp2s": "zateplení domu",
+      "samp2t": "утепле́ние фаса́да до́ма"
+    },
+    {
+      "reve": 1,
+      "entr": "naruby",
+      "samp2s": "obrátit celý dům naruby",
+      "samp2t": "переверну́ть весь дом вверх дном"
+    },
+    {
+      "reve": 1,
+      "entr": "sypat",
+      "samp2s": "Sypte domů!",
+      "samp2t": "Убира́йтесь домо́й!"
+    },
+    {
+      "reve": 0,
+      "entr": "гнездо́",
+      "samp2s": "rodné hnízdo, rodný dům",
+      "samp2t": "роди́мое гнездо́"
+    },
+    {
+      "reve": 0,
+      "entr": "дом",
+      "samp2s": "veřejný dům, nevěstinec",
+      "samp2t": "публи́чный дом"
+    },
+    {
+      "reve": 0,
+      "entr": "доста́вка",
+      "samp2s": "rozvoz (domů), donáška do domu",
+      "samp2t": "доста́вка на́ дом"
+    },
+    {
+      "reve": 0,
+      "entr": "магази́н",
+      "samp2s": "obchodní dům",
+      "samp2t": "универса́льный магази́н"
+    },
+    {
+      "reve": 0,
+      "entr": "подбежа́ть",
+      "samp2s": "přiběhnout k domu",
+      "samp2t": "подбежа́ть к до́му"
+    },
+    {
+      "reve": 0,
+      "entr": "торго́вый",
+      "samp2s": "obchodní dům",
+      "samp2t": "торго́вый це́нтр"
+    },
+    {
+      "reve": 0,
+      "entr": "вблизи́",
+      "samp2s": "Škola je blízko domu.",
+      "samp2t": "Шко́ла вблизи́ от до́ма."
+    },
+    {
+      "reve": 0,
+      "entr": "ве́чер",
+      "samp2s": "Přišel domů k večeru.",
+      "samp2t": "Пришёл домо́й под ве́чер."
+    },
+    {
+      "reve": 0,
+      "entr": "во́зле",
+      "samp2s": "dům u lesa",
+      "samp2t": "дом во́зле леса́"
+    },
+    {
+      "reve": 0,
+      "entr": "войти́",
+      "samp2s": "vejít do domu/historie",
+      "samp2t": "войти́ в дом/исто́рию"
+    },
+    {
+      "reve": 0,
+      "entr": "вот",
+      "samp2s": "Tady je náš dům.",
+      "samp2t": "Вот наш дом."
+    },
+    {
+      "reve": 0,
+      "entr": "всё",
+      "samp2s": "No nic, jdu domů.",
+      "samp2t": "Всё, я домо́й."
+    },
+    {
+      "reve": 0,
+      "entr": "за́городный",
+      "samp2s": "rodinný dům <span class='d'>na okraji města, za městem</span>",
+      "samp2t": "за́городный дом"
+    },
+    {
+      "reve": 0,
+      "entr": "из",
+      "samp2s": "kamenný dům",
+      "samp2t": "дом из ка́мня"
+    },
+    {
+      "reve": 0,
+      "entr": "пане́льный",
+      "samp2s": "panelový dům, panelák",
+      "samp2t": "пане́льный дом"
+    },
+    {
+      "reve": 0,
+      "entr": "переки́нуться",
+      "samp2s": "Oheň přeskočil na sousední dům.",
+      "samp2t": "Ого́нь переки́нулся на сосе́дний дом."
+    },
+    {
+      "reve": 0,
+      "entr": "пора́",
+      "samp2s": "Je čas jít domů.",
+      "samp2t": "Пора́ домо́й."
+    },
+    {
+      "reve": 0,
+      "entr": "приуса́дебный",
+      "samp2s": "zahrada, pozemek okolo domu",
+      "samp2t": "приуса́дебный уча́сток земли́"
+    },
+    {
+      "reve": 0,
+      "entr": "разбо́рный",
+      "samp2s": "montovaný dům",
+      "samp2t": "разбо́рный дом"
+    },
+    {
+      "reve": 0,
+      "entr": "роди́тельский",
+      "samp2s": "otcovský dům",
+      "samp2t": "роди́тельский дом"
+    },
+    {
+      "reve": 0,
+      "entr": "универса́льный",
+      "samp2s": "obchodní dům",
+      "samp2t": "универса́льный магази́н"
+    },
+    {
+      "reve": 0,
+      "entr": "гость",
+      "samp2s": "Host do domu, Bůh do domu.",
+      "samp2t": "Гость на гость хозя́ину ра́дость."
+    },
+    {
+      "reve": 0,
+      "entr": "незва́ный",
+      "samp2s": "(Nezvaný) host do domu - hůl do ruky.",
+      "samp2t": "Незва́ный гость ху́же тата́рина."
+    },
+    {
+      "reve": 1,
+      "entr": "dům",
+      "samp2s": "veřejný dům",
+      "samp2t": "публи́чный дом"
+    }
+  ],
+  "other": [],
+  "morf_table": {},
+  "short": []
+}

@@ -23,7 +23,7 @@ public class Answer {
     private List<Other> other = null;
     @SerializedName("morf_table")
     @Expose
-    private List<Object> morfTable = null;
+    private Object morfTable = null;
     @SerializedName("short")
     @Expose
     private List<Object> _short = null;
@@ -68,11 +68,11 @@ public class Answer {
         this.other = other;
     }
 
-    public List<Object> getMorfTable() {
+    public Object getMorfTable() {
         return morfTable;
     }
 
-    public void setMorfTable(List<Object> morfTable) {
+    public void setMorfTable(Object morfTable) {
         this.morfTable = morfTable;
     }
 

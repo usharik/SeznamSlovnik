@@ -1,0 +1,220 @@
+{
+  "translate": [
+    {
+      "head": {
+        "entr": "pas",
+        "pron": "",
+        "form": "",
+        "morf": "podstatné jméno, rod mužský",
+        "phrs": "pas",
+        "vari": "",
+        "vfem": "",
+        "hyph": "",
+        "prag": "",
+        "cntx": "doklad",
+        "dict": "cz_ru",
+        "morf_id": ""
+      },
+      "grps": [
+        {
+          "sens": [
+            {
+              "morf": "",
+              "numb": "",
+              "phrs": "",
+              "styl": "",
+              "form": "",
+              "trans": [
+                [
+                  "па́спорт"
+                ]
+              ],
+              "coll2": [],
+              "samp2": [
+                {
+                  "samp2s": "cestovní pas",
+                  "samp2t": "заграни́чный па́спорт, загранпа́спорт"
+                }
+              ],
+              "note2": "",
+              "desc2": "",
+              "link2": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "head": {
+        "entr": "pas",
+        "pron": "",
+        "form": "",
+        "morf": "podstatné jméno, rod mužský",
+        "phrs": "pas",
+        "vari": "",
+        "vfem": "",
+        "hyph": "",
+        "prag": "sport.",
+        "cntx": "přihrávka",
+        "dict": "cz_ru",
+        "morf_id": ""
+      },
+      "grps": [
+        {
+          "sens": [
+            {
+              "morf": "",
+              "numb": "",
+              "phrs": "",
+              "styl": "",
+              "form": "",
+              "trans": [
+                [
+                  "пас",
+                  ", ",
+                  "переда́ча"
+                ]
+              ],
+              "coll2": [],
+              "samp2": [],
+              "note2": "",
+              "desc2": "",
+              "link2": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sound": "",
+  "relations": {
+    "Odvozená slova": [
+      "pasový"
+    ],
+    "Slovní spojení": [
+      "faux pas",
+      "skipas"
+    ],
+    "dict": "cz_ru",
+    "direction": "from"
+  },
+  "ftx_samp": [
+    {
+      "reve": 1,
+      "entr": "cestovní",
+      "samp2s": "cestovní pas",
+      "samp2t": "заграни́чный па́спорт, загранпа́спорт"
+    },
+    {
+      "reve": 1,
+      "entr": "pást",
+      "samp2s": "pást koníčky <span class='d'>o malých dětech ležících na bříšku</span>",
+      "samp2t": "приподнима́ться на ру́чках"
+    },
+    {
+      "reve": 1,
+      "entr": "biometrický",
+      "samp2s": "biometrický pas",
+      "samp2t": "биометри́ческий па́спорт"
+    },
+    {
+      "reve": 1,
+      "entr": "hlásit",
+      "samp2s": "<span class='y'>karet.</span> hlásit pas",
+      "samp2t": "пасова́ть"
+    },
+    {
+      "reve": 1,
+      "entr": "pas",
+      "samp2s": "cestovní pas",
+      "samp2t": "заграни́чный па́спорт, загранпа́спорт"
+    },
+    {
+      "reve": 1,
+      "entr": "pás",
+      "samp2s": "za pasem",
+      "samp2t": "за по́ясом"
+    },
+    {
+      "reve": 1,
+      "entr": "prošlý",
+      "samp2s": "prošlý pas",
+      "samp2t": "просро́ченный па́спорт"
+    },
+    {
+      "reve": 1,
+      "entr": "široký",
+      "samp2s": "Sukně je široká v pase.",
+      "samp2t": "Ю́бка велика́ в та́лии."
+    },
+    {
+      "reve": 1,
+      "entr": "vosí",
+      "samp2s": "<span class='y'>přen.</span> vosí pas",
+      "samp2t": "оси́ная та́лия"
+    },
+    {
+      "reve": 1,
+      "entr": "zbrojní",
+      "samp2s": "zbrojní pas",
+      "samp2t": "разреше́ние на ору́жие"
+    },
+    {
+      "reve": 1,
+      "entr": "propadnout",
+      "samp2s": "Pas propadl.",
+      "samp2t": "Па́спорт пропа́л., Истёк срок де́йствия па́спорта."
+    },
+    {
+      "reve": 0,
+      "entr": "заграни́чный",
+      "samp2s": "cestovní pas",
+      "samp2t": "заграни́чный па́спорт"
+    },
+    {
+      "reve": 0,
+      "entr": "окру́жность",
+      "samp2s": "obvod prsou/v pase",
+      "samp2t": "окру́жность груди́/та́лии"
+    },
+    {
+      "reve": 0,
+      "entr": "ору́жие",
+      "samp2s": "zbrojní pas",
+      "samp2t": "разреше́ние на ноше́ние ору́жия"
+    },
+    {
+      "reve": 0,
+      "entr": "па́спорт",
+      "samp2s": "cestovní pas",
+      "samp2t": "заграни́чный па́спорт"
+    },
+    {
+      "reve": 0,
+      "entr": "показа́ть",
+      "samp2s": "předložit cestovní pas",
+      "samp2t": "показа́ть па́спорт"
+    },
+    {
+      "reve": 0,
+      "entr": "продли́ть",
+      "samp2s": "prodloužit platnost pasu",
+      "samp2t": "продли́ть па́спорт"
+    },
+    {
+      "reve": 0,
+      "entr": "та́лия",
+      "samp2s": "přibrat/zhubnout v pase",
+      "samp2t": "приба́вить/похуде́ть в та́лии"
+    },
+    {
+      "reve": 0,
+      "entr": "гусь",
+      "samp2s": "Husy (jsme) spolu nepásli.",
+      "samp2t": "Гусь свинье́ не това́рищ."
+    }
+  ],
+  "other": [],
+  "morf_table": {},
+  "short": []
+}
